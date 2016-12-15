@@ -73,6 +73,8 @@ import static javafx.application.Application.launch;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import static javafx.scene.paint.Color.rgb;
+import static javafx.application.Application.launch;
+import static javafx.scene.paint.Color.rgb;
 
 /**
  *
@@ -337,7 +339,7 @@ public class StudentTracker extends Application {
     }
 
     private ListView<String> createVisibleStudentList(List<String> studentList,
-            TextField studentField, Stage primaryStage) {
+            TextField studentField, Stage primaryStage, String stdntLstPath, StringProperty stdntLstTxt) {
         //Creates visible list for GUI
 
         //Create internal ObservableList based on studentList.
@@ -377,7 +379,14 @@ public class StudentTracker extends Application {
                 }
             }
         });
+        if (stdntLstPath.isEmpty()) {
+            stdntLstTxt.set("No student list has been selected");
+        } else {
+            stdntLstTxt.set("Selected Student List:\n" + stdntLstPath);
+            extractStudentList(studentList, stdntLstPath);
+        }
         return visibleStudentList;
+        
     }
 
     private void initStudentStage(Student student, Stage primaryStage) {
@@ -529,7 +538,7 @@ public class StudentTracker extends Application {
         detailsStage.show();
     }
 
-    private Button initAddFormButton(Student student, Stage parentStage, List forms, ListView visibleList) {
+    private Button initAddFormButton(Student student, Stage parentStage, List forms, ListView<String> visibleList) {
         Button addFormButton = new Button("Add Form");
         addFormButton.setOnAction((ActionEvent event) -> {
             String studentPath = studentFilesPath + File.separator + student.getFullName();
@@ -552,7 +561,7 @@ public class StudentTracker extends Application {
         return addFormButton;
     }
 
-    private Button initRemoveFormButton(Student student, Stage parentStage, List forms, ListView visibleList) {
+    private Button initRemoveFormButton(Student student, Stage parentStage, List forms, ListView<String> visibleList) {
         Button removeFormButton = new Button("Remove");
         removeFormButton.setOnAction((ActionEvent event) -> {
             if (!forms.isEmpty()) {
@@ -951,7 +960,7 @@ public class StudentTracker extends Application {
         return statusText;
     }
 
-    private void initAddStudentStage(String stdntLstPath, Properties properties) {
+    private void initAddStudentStage(String stdntLstPath, Properties properties, ListView<String> visibleStudentList, List<String> studentList, TextField studentField, StringProperty stdntLstTxt, Stage primaryStage) {
         Stage addStudentStage = new Stage();
         Text addText = new Text("Type the name of the student you would like to add and press OK");
         TextField addField = new TextField();
@@ -976,13 +985,13 @@ public class StudentTracker extends Application {
                     System.out.println("Modified key word recognized.");
                     modifyStudentList(formattedName, stdntLstPath, "add");
                     System.out.println("Trying to reset visible list.");
-                    resetVisibleList(properties, stdntLstPath);
+                    resetVisibleList(properties, stdntLstPath, visibleStudentList, studentList,studentField, primaryStage, stdntLstTxt);
                 } else {
                     System.out.println("Modified variable not found, adding.");
                     String modListPath = resourcePath + File.separator + "Modified " + new File(stdntLstPath).getName();
                     modifyStudentList(formattedName, modListPath, "add");
                     System.out.println("Trying to reset visible list.");
-                    resetVisibleList(properties, modListPath);
+                    resetVisibleList(properties, modListPath, visibleStudentList, studentList, studentField, primaryStage, stdntLstTxt);
                 }
             }
         });
@@ -1148,17 +1157,16 @@ public class StudentTracker extends Application {
             stdntLstTxt.set("Selected Student List:\n" + stdntLstPath);
             extractStudentList(studentList, stdntLstPath);
         }
-
+        TextField studentField = new TextField();
         //Create elements for left half of GUI.
         Label stdntLbl = new Label("Student Name:");
-        TextField stdntFld = new TextField();
         ListView<String> visibleStudentList = createVisibleStudentList(studentList,
-                stdntFld, primaryStage);
-        Button setDirBtn = createDirectoryButton(properties, primaryStage);
+            studentField, primaryStage, stdntLstPath, stdntLstTxt);
+        Button setDirBtn = createDirectoryButton(properties, primaryStage, visibleStudentList, studentList, studentField, stdntLstTxt);
         //Place elements in multiple VBoxes for positioning purposes.
         VBox studentName = new VBox();
         studentName.getChildren().add(stdntLbl);
-        studentName.getChildren().add(stdntFld);
+        studentName.getChildren().add(studentField);
         VBox directoryInfo = new VBox();
         directoryInfo.setId("studentInfo");
         directoryInfo.getChildren().add(studentName);
@@ -1173,9 +1181,9 @@ public class StudentTracker extends Application {
         Label studentListLbl = new Label("Student List:");
         Button addStudentButton = new Button("Add");
         addStudentButton.setOnAction((ActionEvent event) -> {
-            initAddStudentStage(stdntLstPath, properties);
+            initAddStudentStage(stdntLstPath, properties, visibleStudentList, studentList, studentField, stdntLstTxt, primaryStage);
         });
-        Button removeStudentButton = initRemoveStudentButton(properties, visibleStudentList, stdntLstPath);
+        Button removeStudentButton = initRemoveStudentButton(properties, visibleStudentList, stdntLstPath, studentList, studentField, primaryStage, stdntLstTxt);
         HBox buttons = new HBox();
         buttons.getChildren().addAll(addStudentButton, removeStudentButton);
         visibleStudents.getChildren().add(studentListLbl);
@@ -1205,7 +1213,7 @@ public class StudentTracker extends Application {
         return layout;
     }
     
-    private Button initRemoveStudentButton(Properties properties, ListView<String> visibleStudentList, String stdntLstPath) {
+    private Button initRemoveStudentButton(Properties properties, ListView<String> visibleStudentList, String stdntLstPath, List<String> studentList, TextField stdntFld, Stage primaryStage, StringProperty stdntLstTxt) {
         Button removeStudentButton = new Button("Remove");
         removeStudentButton.setOnAction((ActionEvent event) -> {
             String drop = visibleStudentList.getSelectionModel().getSelectedItem();
@@ -1219,11 +1227,11 @@ public class StudentTracker extends Application {
 
                 if (fileName[0].equals("Modified")) {
                     modifyStudentList(formattedName, stdntLstPath, "rem");
-                    resetVisibleList(properties, stdntLstPath);
+                    resetVisibleList(properties, stdntLstPath, visibleStudentList, studentList, stdntFld, primaryStage, stdntLstTxt);
                 } else {
                     String modListPath = resourcePath + File.separator + "Modified " + new File(stdntLstPath).getName();
                     modifyStudentList(formattedName, modListPath, "rem");
-                    resetVisibleList(properties, modListPath);
+                    resetVisibleList(properties, modListPath, visibleStudentList, studentList, stdntFld, primaryStage, stdntLstTxt);
                 }
             }
         });
@@ -1274,7 +1282,7 @@ public class StudentTracker extends Application {
     }
 
     private Button createDirectoryButton(Properties properties,
-            Stage primaryStage) {
+            Stage primaryStage, ListView<String> visibleStudentList, List<String> studentList, TextField stdntFld, StringProperty stdntLstTxt) {
         //Create button to choose student list directory.
 
         //Create button.
@@ -1291,14 +1299,14 @@ public class StudentTracker extends Application {
                 //Modify properties file to reflect change in path of student list file.
                 File target = new File(resourcePath + File.separator + listFile.getName());
                 copy(listFile, target);
-                resetVisibleList(properties, resourcePath + File.separator + listFile.getName());
+                resetVisibleList(properties, resourcePath + File.separator + listFile.getName(), visibleStudentList, studentList, stdntFld, primaryStage, stdntLstTxt);
 
             }
         });
         return dirBtn;
     }
 
-    private void resetVisibleList(Properties properties, String listFile) {
+    private void resetVisibleList(Properties properties, String listFile, ListView<String> visibleStudentList, List<String> studentList, TextField stdntFld, Stage primaryStage, StringProperty stdntLstTxt) {
         properties.setProperty("studentListPath", listFile);
         try {
             FileOutputStream saveProp = new FileOutputStream(resourcePath
@@ -1308,7 +1316,9 @@ public class StudentTracker extends Application {
             } catch (IOException io) {
                 System.err.println("Could not update properties: " + io);
             }
-            restartApplication();
+            visibleStudentList = createVisibleStudentList(studentList,
+                stdntFld, primaryStage, listFile, stdntLstTxt);
+            
         } catch (FileNotFoundException fnf) {
             System.err.println("Could not find save to properties file: "
                     + fnf);
