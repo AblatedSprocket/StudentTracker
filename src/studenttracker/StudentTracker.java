@@ -87,7 +87,10 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import static javafx.application.Application.launch;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import static javafx.scene.paint.Color.rgb;
 
 /**
@@ -975,6 +978,10 @@ public class StudentTracker extends Application {
         Alert impFormatAlert = new Alert(Alert.AlertType.WARNING,
                 "Specified date was not formatted properly."
                 + " Please use \"mm-dd-yyyy\" format.");
+        DialogPane dialogPane = impFormatAlert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("Main.css")
+        .toExternalForm());
+        dialogPane.getStyleClass().add("myDialog");
         impFormatAlert.showAndWait();
     }
 
@@ -1224,25 +1231,33 @@ public class StudentTracker extends Application {
         VBox userInput = new VBox();
         userInput.setId("userInput");
         userInput.getChildren().add(directoryInfo);
-        VBox visibleStudents = new VBox();
+        VBox listBox = new VBox();
+        Label studentListText = new Label("Student List:");
+        listBox.getChildren().addAll(studentListText, visibleStudentList);
         //Create elements for right half of GUI.
-        Label studentListLbl = new Label("Student List:");
-        Button addStudentButton = new Button("Add");
+        
+        Button addStudentButton = new Button();
+        Image addStudentImage = new Image(getClass().getResourceAsStream(
+                "AddStudentButton.png"), 110, 66, true, true);
+        addStudentButton.setGraphic(new ImageView(addStudentImage));
         addStudentButton.setOnAction((ActionEvent event) -> {
             initAddStudentStage(stdntLstPath, properties, primaryStage);
         });
         Button removeStudentButton = initRemoveStudentButton(properties,
                 visibleStudentList, stdntLstPath);
+        Image removeStudentImage = new Image(getClass().getResourceAsStream(
+                "RemoveStudentButton.png"), 110, 66, true, true);
+        removeStudentButton.setGraphic(new ImageView(removeStudentImage));
         HBox buttons = new HBox();
+        buttons.setId("listButtons");
         buttons.getChildren().addAll(addStudentButton, removeStudentButton);
-        visibleStudents.getChildren().add(studentListLbl);
-        visibleStudents.getChildren().add(visibleStudentList);
-        visibleStudents.getChildren().add(buttons);
+        VBox rightSide = new VBox();
+        rightSide.setId("rightSide");
+        rightSide.getChildren().addAll(listBox, buttons);
         //Combine left and right halves of GUI in HBox.
         HBox content = new HBox();
         content.setId("content");
-        content.getChildren().add(userInput);
-        content.getChildren().add(visibleStudents);
+        content.getChildren().addAll(userInput, rightSide);
         //Create MenuBar for access to readme file.
         MenuBar menuBar = new MenuBar();
         //Create File menu item.
@@ -1264,7 +1279,7 @@ public class StudentTracker extends Application {
 
     private Button initRemoveStudentButton(Properties properties,
             ListView<String> visibleStudentList, String stdntLstPath) {
-        Button removeStudentButton = new Button("Remove");
+        Button removeStudentButton = new Button();
         removeStudentButton.setOnAction((ActionEvent event) -> {
             String drop
                     = visibleStudentList.getSelectionModel().getSelectedItem();
@@ -1338,7 +1353,9 @@ public class StudentTracker extends Application {
         //Create button to choose student list directory.
 
         //Create button.
-        Button dirBtn = new Button("Set Student List");
+        Button dirBtn = new Button();
+        Image imageDir = new Image(getClass().getResourceAsStream("SetListButton.png"), 110, 66, true, true);
+        dirBtn.setGraphic(new ImageView(imageDir));
         dirBtn.setId("dirBtn");
         //Prompt user to choose student list file.
         FileChooser chooseList = new FileChooser();

@@ -6,26 +6,123 @@ Each line should be prefixed with
     Created on : Dec 15, 2016, 9:30:38 AM
     Author     : Andrew Burch
 */
+.root {
+    -fx-font-size: 12pt;
+    /*-fx-text-fill: #ffffff;*/
+    -fx-font-family: "Arial";
+    -fx-background-color: linear-gradient(to right, #273235, #4c5a5e);
+}
+.menu-button {
+    -fx-padding: 0px;
+    -fx-background-color: transparent;
+}
+.menu-item .label {
+    -fx-text-fill: black;
+}
+.context-menu {
+    -fx-padding: 0;
+}
+.menu-item .text {
+    -fx-font-size: 10pt;
+    
+}
 
+.menu-button {
+    -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 20%);
+    -fx-background-radius: 2;
+    -fx-background-insets: 2;
+    -fx-effect: dropshadow(three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-border-color: #bdbdbd;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 0 10 0 10;
+    -fx-border-radius: 0;
+
+}
+.menu-bar {
+    -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 40%);
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 0;
+    -fx-border-insets: 0;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0;
+}
 .text-field {
-     -fx-max-width: 50px;
-     -fx-vgap: 15px;
- }
- .list-view {
-     -fx-pref-width: 200px;
-     -fx-hgap: 5px;
-     -fx-vgap: 5px;
- }
- #studentInfo {
-     -fx-spacing: 15px;
- }
- #userInput {
-     -fx-spacing: 90px;
- }
- #statusText {
-     -fx-pref-width: 200px;
- }
- #content {
-     -fx-spacing: 15px;
-     -fx-padding: 10px;
- }
+    -fx-max-width: 200px;
+    -fx-vgap: 15px;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+.scroll-bar *.track{
+    -fx-background-color: transparent;
+}
+.scroll-bar *.thumb {
+    -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 20%);
+    -fx-background-radius: 2;
+    -fx-background-insets: 2;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 4;
+    -fx-border-insets: 0 0 0 2;
+}
+.list-view {
+    -fx-pref-width: 250px;
+    -fx-hgap: 20px;
+    -fx-vgap: 20px;
+    -fx-background-color: transparent;
+}
+.list-view *.decrement-button,
+.list-view *.increment-button {
+    -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 20%);
+    -fx-background-radius: 2;
+    -fx-background-insets: 2;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 4;
+    -fx-border-insets: 0 0 0 2;
+    -fx-padding: 6 4 6 4;
+}
+#studentInfo {
+    -fx-spacing: 15px;
+}
+#userInput {
+    -fx-spacing: 90px;
+}
+#statusText {
+    -fx-pref-width: 200px;
+}
+#content {
+    -fx-spacing: 15px;
+    -fx-padding: 10px;
+}
+.button {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+#dirBtn {
+
+}
+#listButtons {
+    -fx-spacing: 20px;
+    -fx-alignment: center-left;
+}
+.text, .label {
+    -fx-font: 12pt "Arial";
+    -fx-text-fill: #ffffff;
+
+}
+#rightSide {
+    -fx-spacing: 20px;
+}
+.dialog-pane {
+    -fx-background-color: blue;
+}
+.dialog-pane *.header-panel *.label {
+    -fx-background-color: -fx-box-border, linear-gradient(-fx-background, derive(-fx-background, 30%));
+    -fx-background-insets: 0, 0 0 1 0;
+}
