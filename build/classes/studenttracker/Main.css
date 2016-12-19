@@ -38,6 +38,11 @@ Each line should be prefixed with
     -fx-border-radius: 0;
 
 }
+.menu-button:pressed {
+    -fx-translate-x: 1;
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
 .menu-bar {
     -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 40%);
     -fx-background-radius: 0;
@@ -55,6 +60,11 @@ Each line should be prefixed with
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
+.check-box {
+    -fx-font-size: 12pt;
+    -fx-font-family: "Arial";
+    -fx-text-fill: #ffffff;
+}
 .scroll-bar {
     -fx-background-color: transparent;
 }
@@ -70,6 +80,9 @@ Each line should be prefixed with
     -fx-border-radius: 4;
     -fx-border-insets: 0 0 0 2;
 }
+.scroll-bar *.thumb:pressed {
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
 .list-view {
     -fx-pref-width: 250px;
     -fx-hgap: 20px;
@@ -81,11 +94,17 @@ Each line should be prefixed with
     -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 20%);
     -fx-background-radius: 2;
     -fx-background-insets: 2;
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    
     -fx-border-color: #bdbdbd;
     -fx-border-radius: 4;
     -fx-border-insets: 0 0 0 2;
     -fx-padding: 6 4 6 4;
+}
+.list-view *.decrement-button:pressed,
+.list-view *.increment-button:pressed {
+    -fx-translate-x: 1;
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 }
 #studentInfo {
     -fx-spacing: 15px;
@@ -104,6 +123,11 @@ Each line should be prefixed with
     -fx-padding: 0;
     -fx-background-insets: 0;
 }
+.button:pressed {
+    -fx-translate-x: 1;
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
 #dirBtn {
 
 }
@@ -111,10 +135,16 @@ Each line should be prefixed with
     -fx-spacing: 20px;
     -fx-alignment: center-left;
 }
-.text, .label {
+#buttonBox {
+    -fx-spacing: 20px;
+}
+.label {
     -fx-font: 12pt "Arial";
     -fx-text-fill: #ffffff;
 
+}
+.text {
+    -fx-font: 12pt "Arial";
 }
 #rightSide {
     -fx-spacing: 20px;

@@ -1,25 +1,7 @@
 /* 
- * The MIT License
- *
  * Copyright 2016 Andrew Burch.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * This software is not availabe for distribution under any license.
  */
 package studenttracker;
 
@@ -97,8 +79,6 @@ import static javafx.scene.paint.Color.rgb;
  *
  * @author Andrew Burch
  */
-
-
 public class StudentTracker extends Application {
 
     String userPath;
@@ -132,12 +112,12 @@ public class StudentTracker extends Application {
 
         List<String> studentList = new ArrayList<>();
         //Create GUI.
+        Image okImage = new Image(getClass().getResourceAsStream(
+                "OKButton.png"), 55, 33, true, true);
         Scene scene = new Scene(createLayout(studentList, properties,
                 primaryStage));
         scene.getStylesheets().add(StudentTracker.class.getResource(
                 "Main.css").toExternalForm());
-//        scene.getStylesheets().add(CertificateCreator.class.getResource(
-//                "Main.css").toExternalForm());
         primaryStage.setTitle("Student Tracker");
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
@@ -454,8 +434,8 @@ public class StudentTracker extends Application {
         groupBox.setId("groupB");
         setCheck(groupBox, student);
         groupBox.setOnMouseClicked((MouseEvent a) -> {
-            if (student.getStartGroup() == null && 
-                    student.getEndGroup() == null) {
+            if (student.getStartGroup() == null
+                    && student.getEndGroup() == null) {
                 addBoxFunction(groupBox, student, Category.groupStart);
             } else if (student.getEndGroup() == null) {
                 addBoxFunction(groupBox, student, Category.groupEnd);
@@ -467,8 +447,8 @@ public class StudentTracker extends Application {
         checkInBox.setId("checkInB");
         setCheck(checkInBox, student);
         checkInBox.setOnMouseClicked((MouseEvent a) -> {
-            if (student.getStartCheckIn() == null &&
-                    student.getEndCheckIn() == null) {
+            if (student.getStartCheckIn() == null
+                    && student.getEndCheckIn() == null) {
                 addBoxFunction(checkInBox, student, Category.checkInStart);
             } else if (student.getEndCheckIn() == null) {
                 addBoxFunction(checkInBox, student, Category.checkInEnd);
@@ -477,7 +457,7 @@ public class StudentTracker extends Application {
             }
         });
 
-        Text modDate = new Text("Modify dates");
+        Label modDate = new Label("Modify dates");
         modDate.setOnMouseClicked((MouseEvent event) -> {
             modifyStudentDialog(student, indBox, groupBox, checkInBox);
         });
@@ -486,19 +466,27 @@ public class StudentTracker extends Application {
         Button detailsButton = createDetailsButton(student, studentStage);
 
         VBox studentBox = new VBox();
-        Text title = new Text("Counseling enrollment for " + studentName);
+        Label title = new Label("Counseling enrollment for " + studentName);
         HBox buttons = new HBox();
+        buttons.setId("buttonBox");
         buttons.getChildren().addAll(addWalkInButton, detailsButton);
         studentBox.getChildren().addAll(title, indBox, groupBox, checkInBox,
-                modDate, buttons);
-        Scene studentScene = new Scene(studentBox);
+                modDate);
+        VBox contentBox = new VBox();
+        contentBox.setId("buttonBox");
+        contentBox.getChildren().addAll(studentBox, buttons);
+        Scene studentScene = new Scene(contentBox);
+        studentScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
         studentStage.setScene(studentScene);
         studentStage.show();
     }
 
     private Button createDetailsButton(Student student, Stage studentStage) {
         Button detailsButton = new Button();
-        detailsButton.setText("Details");
+        Image detailsImage = new Image(getClass().getResourceAsStream(
+                "DetailsButton.png"), 110, 66, true, true);
+        detailsButton.setGraphic(new ImageView(detailsImage));
         detailsButton.setOnAction((ActionEvent event) -> {
             initDetailsStage(student, studentStage);
         });
@@ -537,14 +525,15 @@ public class StudentTracker extends Application {
             modifyDatabase(Category.hasEval, student);
             evalBox.setSelected(student.getEval());
         });
-        Text formText = new Text("Forms:");
+        Label formText = new Label("Forms:");
         ListView<String> visibleFormList = new ListView<>();
+        visibleFormList.setEditable(false);
+        visibleFormList.setMaxSize(280, 120);
         List forms = new ArrayList<>();
         if (!student.getForms().isEmpty()) {
             forms.add(student.getForms().split(";"));
         }
-        visibleFormList.setEditable(false);
-        visibleFormList.setMaxSize(280, 120);
+        
         visibleFormList.setItems(FXCollections.observableList(forms));
         visibleFormList.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() == 2 && !event.isConsumed()) {
@@ -553,9 +542,11 @@ public class StudentTracker extends Application {
                     if (Desktop.isDesktopSupported()) {
                         String fileName = visibleFormList.getSelectionModel()
                                 .getSelectedItem();
-                        Desktop.getDesktop().open(new File(studentFilesPath
-                                + File.separator + student.getFullName()
-                                + File.separator + fileName));
+                        if (fileName != null) {
+                            Desktop.getDesktop().open(new File(studentFilesPath
+                                    + File.separator + student.getFullName()
+                                    + File.separator + fileName));
+                        }
                     }
                 } catch (IOException io) {
                 }
@@ -569,29 +560,46 @@ public class StudentTracker extends Application {
                 forms, visibleFormList);
 
         HBox formButtons = new HBox();
+        formButtons.setId("buttonBox");
         formButtons.getChildren().addAll(addFormButton, removeFormButton);
-        Text noteText = new Text("Notes:");
+        Label noteText = new Label("Notes:");
         TextArea noteArea = new TextArea();
         noteArea.setText(student.getNotes());
         noteArea.setMaxSize(280, 500);
         noteArea.setWrapText(true);
-        Button okButton = new Button("OK");
+        Button okButton = new Button();
+        Image okImage = new Image(getClass().getResourceAsStream(
+                "OKButton.png"), 55, 33, true, true);
+        okButton.setGraphic(new ImageView(okImage));
+        okButton.setId("okButton");
         okButton.setOnAction((ActionEvent event) -> {
             student.setNotes(noteArea.getText());
             modifyDatabase(Category.notes, student);
             detailsStage.close();
         });
+        VBox noteLayout = new VBox();
+        noteLayout.getChildren().addAll(noteText, noteArea);
+        VBox formLayout = new VBox();
+        formLayout.getChildren().addAll(formText, visibleFormList);
+        VBox checkBoxLayout = new VBox();
+        checkBoxLayout.getChildren().addAll(IEPBox, ffBox, evalBox);
         VBox stageLayout = new VBox();
-        stageLayout.getChildren().addAll(IEPBox, ffBox, evalBox, formText,
-                visibleFormList, formButtons, noteText, noteArea, okButton);
-        Scene scene = new Scene(stageLayout, 300, 500);
-        detailsStage.setScene(scene);
+        stageLayout.setId("buttonBox");
+        stageLayout.getChildren().addAll(checkBoxLayout, formLayout, 
+                formButtons, noteLayout, okButton);
+        Scene detailsScene = new Scene(stageLayout, 300, 500);
+        detailsScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
+        detailsStage.setScene(detailsScene);
         detailsStage.show();
     }
 
     private Button initAddFormButton(Student student, Stage parentStage,
             List forms, ListView visibleList) {
-        Button addFormButton = new Button("Add Form");
+        Button addFormButton = new Button();
+        Image addFormImage = new Image(getClass().getResourceAsStream(
+                "AddFormButton.png"), 110, 66, true, true);
+        addFormButton.setGraphic(new ImageView(addFormImage));
         addFormButton.setOnAction((ActionEvent event) -> {
             String studentPath = studentFilesPath + File.separator
                     + student.getFullName();
@@ -617,7 +625,10 @@ public class StudentTracker extends Application {
 
     private Button initRemoveFormButton(Student student, Stage parentStage,
             List forms, ListView visibleList) {
-        Button removeFormButton = new Button("Remove");
+        Button removeFormButton = new Button();
+        Image removeFormImage = new Image(getClass().getResourceAsStream(
+                "RemoveFormButton.png"), 110, 66, true, true);
+        removeFormButton.setGraphic(new ImageView(removeFormImage));
         removeFormButton.setOnAction((ActionEvent event) -> {
             if (!forms.isEmpty()) {
                 String fileName = (String) visibleList.getSelectionModel()
@@ -638,7 +649,9 @@ public class StudentTracker extends Application {
 
     private Button createAddWalkInButton(Student student) {
         Button addWalkInButton = new Button();
-        addWalkInButton.setText("Add Walk-In");
+        Image walkInImage = new Image(getClass().getResourceAsStream(
+                "AddWalkInButton.png"), 110, 66, true, true);
+        addWalkInButton.setGraphic(new ImageView(walkInImage));
         addWalkInButton.setOnAction((final ActionEvent addWalkAct) -> {
             String walkInDate = LocalDateTime.now().format(
                     DateTimeFormatter.ofPattern("MM-dd-yyyy"));
@@ -703,14 +716,14 @@ public class StudentTracker extends Application {
             CheckBox groupBox, CheckBox checkInBox) {
 
         //Declare nodes for dialog box
-        Text warn = new Text("Replace any incorrect dates and press the"
+        Label warn = new Label("Replace any incorrect dates and press the"
                 + " \"OK\".");
-        Text startIndText = new Text("Independent counseling start date:");
-        Text endIndText = new Text("Independent counseling end date:");
-        Text startGroupText = new Text("Group counseling start date:");
-        Text endGroupText = new Text("Group counseling end date:");
-        Text startCheckInText = new Text("Check-in counseling start date:");
-        Text endCheckInText = new Text("Check-in counseling end date:");
+        Label startIndText = new Label("Independent counseling start date:");
+        Label endIndText = new Label("Independent counseling end date:");
+        Label startGroupText = new Label("Group counseling start date:");
+        Label endGroupText = new Label("Group counseling end date:");
+        Label startCheckInText = new Label("Check-in counseling start date:");
+        Label endCheckInText = new Label("Check-in counseling end date:");
 
         TextField startIndField = new TextField();
         TextField endIndField = new TextField();
@@ -729,7 +742,11 @@ public class StudentTracker extends Application {
         endCheckInField.setText(student.getEndCheckIn());
         Stage modStudentStage = new Stage();
 
-        Button okBtn = new Button("OK");
+        Button okBtn = new Button();
+        Image okImage = new Image(getClass().getResourceAsStream(
+                "OKButton.png"), 55, 33, true, true);
+        okBtn.setGraphic(new ImageView(okImage));
+        okBtn.setId("okButton");
         okBtn.setOnAction((ActionEvent event) -> {
             try {
                 System.out.println("startIndField's text \""
@@ -799,7 +816,10 @@ public class StudentTracker extends Application {
         });
 
         //Lay out the stage
-        Button cancelBtn = new Button("Cancel");
+        Button cancelBtn = new Button();
+        Image cancelImage = new Image(getClass().getResourceAsStream(
+                "CancelButton.png"), 55, 33, true, true);
+        cancelBtn.setGraphic(new ImageView(cancelImage));
         cancelBtn.setOnAction((ActionEvent event) -> {
             modStudentStage.close();
         });
@@ -822,6 +842,8 @@ public class StudentTracker extends Application {
         datePane.add(cancelBtn, 2, 7);
         stageLayout.getChildren().addAll(warn, datePane);
         Scene scene = new Scene(stageLayout);
+        scene.getStylesheets().add(getClass().getResource("Main.css")
+                .toExternalForm());
         modStudentStage.setScene(scene);
         modStudentStage.show();
 
@@ -980,7 +1002,7 @@ public class StudentTracker extends Application {
                 + " Please use \"mm-dd-yyyy\" format.");
         DialogPane dialogPane = impFormatAlert.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("Main.css")
-        .toExternalForm());
+                .toExternalForm());
         dialogPane.getStyleClass().add("myDialog");
         impFormatAlert.showAndWait();
     }
@@ -993,22 +1015,30 @@ public class StudentTracker extends Application {
         return statusText;
     }
 
-    private void initAddStudentStage(String stdntLstPath, 
+    private void initAddStudentStage(String stdntLstPath,
             Properties properties, Stage primaryStage) {
         Stage addStudentStage = new Stage();
         addStudentStage.setTitle("Add Student");
         addStudentStage.initOwner(primaryStage);
         addStudentStage.initModality(Modality.APPLICATION_MODAL);
-        Text addText = new Text("Type the name of the student you would like "
+        Label addText = new Label("Type the name of the student you would like "
                 + "to add and press OK");
         TextField addField = new TextField();
-        Button okButton = new Button("OK");
-        Button cancelButton = new Button("Cancel");
+        Button okButton = new Button();
+        Image okImage = new Image(getClass().getResourceAsStream(
+                "OKButton.png"), 55, 33, true, true);
+        okButton.setGraphic(new ImageView(okImage));
+        okButton.setId("okButton");
+        Button cancelButton = new Button();
+        Image cancelImage = new Image(getClass().getResourceAsStream(
+                "CancelButton.png"), 55, 33, true, true);
+        cancelButton.setGraphic(new ImageView(cancelImage));
+        cancelButton.setId("cancelButton");
         cancelButton.setOnAction((ActionEvent event) -> {
             addStudentStage.close();
         });
         okButton.setOnAction((ActionEvent event) -> {
-            System.out.println("Taking action ?" + (addField.getText() != null 
+            System.out.println("Taking action ?" + (addField.getText() != null
                     && !addField.getText().equals("")));
             if (addField.getText() != null && !addField.getText().equals("")) {
                 System.out.println("We're taking action!");
@@ -1037,11 +1067,17 @@ public class StudentTracker extends Application {
             }
         });
         HBox buttons = new HBox();
+        buttons.setId("buttonBox");
         buttons.getChildren().addAll(okButton, cancelButton);
+        VBox addBox = new VBox();
+        addBox.getChildren().addAll(addText, addField);
         VBox layout = new VBox();
-        layout.getChildren().addAll(addText, addField, buttons);
-        Scene scene = new Scene(layout);
-        addStudentStage.setScene(scene);
+        layout.setId("buttonBox");
+        layout.getChildren().addAll(addBox, buttons);
+        Scene addScene = new Scene(layout);
+        addScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
+        addStudentStage.setScene(addScene);
         addStudentStage.show();
     }
 
@@ -1159,11 +1195,11 @@ public class StudentTracker extends Application {
         }
     }
 
-    private void copy(File source, File target) 
+    private void copy(File source, File target)
             throws IllegalArgumentException {
         /* copy 
         
-        */
+         */
         System.out.println("Source file: " + source.getName());
         System.out.println("Target file: " + target.getName());
         System.out.println("Source and target files are the same? "
@@ -1235,7 +1271,7 @@ public class StudentTracker extends Application {
         Label studentListText = new Label("Student List:");
         listBox.getChildren().addAll(studentListText, visibleStudentList);
         //Create elements for right half of GUI.
-        
+
         Button addStudentButton = new Button();
         Image addStudentImage = new Image(getClass().getResourceAsStream(
                 "AddStudentButton.png"), 110, 66, true, true);
@@ -1249,10 +1285,11 @@ public class StudentTracker extends Application {
                 "RemoveStudentButton.png"), 110, 66, true, true);
         removeStudentButton.setGraphic(new ImageView(removeStudentImage));
         HBox buttons = new HBox();
+        buttons.setId("buttonBox");
         buttons.setId("listButtons");
         buttons.getChildren().addAll(addStudentButton, removeStudentButton);
         VBox rightSide = new VBox();
-        rightSide.setId("rightSide");
+        rightSide.setId("buttonBox");
         rightSide.getChildren().addAll(listBox, buttons);
         //Combine left and right halves of GUI in HBox.
         HBox content = new HBox();
