@@ -1,14 +1,14 @@
-/*
-Here comes the text of your license
-Each line should be prefixed with 
-*/
 /* 
-    Created on : Dec 15, 2016, 9:30:38 AM
-    Author     : Andrew Burch
-*/
+ * Copyright 2016 Andrew Burch.
+ *
+ * This software is not available for distribution under any license.
+ *
+ *   Created on : Dec 15, 2016, 9:30:38 AM
+ *   Author     : Andrew Burch
+ */
 .root {
     -fx-font-size: 12pt;
-    /*-fx-text-fill: #ffffff;*/
+    -fx-text-fill: #ffffff;
     -fx-font-family: "Arial";
     -fx-background-color: linear-gradient(to right, #273235, #4c5a5e);
 }
@@ -131,12 +131,23 @@ Each line should be prefixed with
 #dirBtn {
 
 }
+#modDate {
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 0 160;
+    -fx-alignment: center;
+    -fx-text-fill: #bdbdbd;
+}
+#gridPane {
+    -fx-vgap: 10px;
+    -fx-padding: 10px;
+}
 #listButtons {
     -fx-spacing: 20px;
     -fx-alignment: center-left;
 }
 #buttonBox {
     -fx-spacing: 20px;
+    -fx-padding: 10px;
 }
 .label {
     -fx-font: 12pt "Arial";

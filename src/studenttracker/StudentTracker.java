@@ -135,7 +135,7 @@ public class StudentTracker extends Application {
             Class.forName("org.sqlite.JDBC");
             try {
                 Connection conn
-                        = DriverManager.getConnection("jdbc:sqlite:" + dbName + ".db");
+                        = DriverManager.getConnection("jdbc:sqlite:" + resourcePath + File.separator + dbName + ".db");
                 Statement stat = conn.createStatement();
                 try {
                     stat.executeUpdate("drop table if exists students;");
@@ -458,6 +458,7 @@ public class StudentTracker extends Application {
         });
 
         Label modDate = new Label("Modify dates");
+        modDate.setId("modDate");
         modDate.setOnMouseClicked((MouseEvent event) -> {
             modifyStudentDialog(student, indBox, groupBox, checkInBox);
         });
@@ -742,12 +743,12 @@ public class StudentTracker extends Application {
         endCheckInField.setText(student.getEndCheckIn());
         Stage modStudentStage = new Stage();
 
-        Button okBtn = new Button();
+        Button okButton = new Button();
         Image okImage = new Image(getClass().getResourceAsStream(
                 "OKButton.png"), 55, 33, true, true);
-        okBtn.setGraphic(new ImageView(okImage));
-        okBtn.setId("okButton");
-        okBtn.setOnAction((ActionEvent event) -> {
+        okButton.setGraphic(new ImageView(okImage));
+        okButton.setId("okButton");
+        okButton.setOnAction((ActionEvent event) -> {
             try {
                 System.out.println("startIndField's text \""
                         + startIndField.getText() + "\"");
@@ -816,16 +817,20 @@ public class StudentTracker extends Application {
         });
 
         //Lay out the stage
-        Button cancelBtn = new Button();
+        Button cancelButton = new Button();
         Image cancelImage = new Image(getClass().getResourceAsStream(
                 "CancelButton.png"), 55, 33, true, true);
-        cancelBtn.setGraphic(new ImageView(cancelImage));
-        cancelBtn.setOnAction((ActionEvent event) -> {
+        cancelButton.setGraphic(new ImageView(cancelImage));
+        cancelButton.setOnAction((ActionEvent event) -> {
             modStudentStage.close();
         });
+        HBox buttonBox = new HBox();
+        buttonBox.setId("buttonBox");
+        buttonBox.getChildren().addAll(okButton, cancelButton);
         modStudentStage.initModality(Modality.APPLICATION_MODAL);
         VBox stageLayout = new VBox();
         GridPane datePane = new GridPane();
+        datePane.setId("gridPane");
         datePane.add(startIndText, 1, 1);
         datePane.add(endIndText, 1, 2);
         datePane.add(startGroupText, 1, 3);
@@ -838,8 +843,7 @@ public class StudentTracker extends Application {
         datePane.add(endGroupField, 2, 4);
         datePane.add(startCheckInField, 2, 5);
         datePane.add(endCheckInField, 2, 6);
-        datePane.add(okBtn, 1, 7);
-        datePane.add(cancelBtn, 2, 7);
+        datePane.add(buttonBox, 1, 7);
         stageLayout.getChildren().addAll(warn, datePane);
         Scene scene = new Scene(stageLayout);
         scene.getStylesheets().add(getClass().getResource("Main.css")
