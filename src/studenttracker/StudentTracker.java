@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright 2016 Andrew Burch.
+ *
+ * This software is not availabe for distribution under any license.
  */
 package studenttracker;
 
@@ -15,11 +15,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -61,33 +66,39 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.ListIterator;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.DataFormatException;
+import javafx.geometry.Pos;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
-import static javafx.application.Application.launch;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import static javafx.scene.paint.Color.rgb;
-import static javafx.application.Application.launch;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
 import static javafx.scene.paint.Color.rgb;
 
 /**
  *
  * @author Andrew Burch
  */
-enum Category {
-
-}
-
 public class StudentTracker extends Application {
 
+    String schoolName;
     String userPath;
     String resourcePath;
+    String schoolPath;
     String studentFilesPath;
     static String dbName = "students";
     List<String[]> backgroundList = new ArrayList<>();
@@ -103,24 +114,72 @@ public class StudentTracker extends Application {
         //Set class variables excluding selectedStudent.
         userPath = System.getProperty("user.dir");
         resourcePath = userPath + File.separator + "Resources";
-        studentFilesPath = resourcePath + File.separator + "Student Files";
+        new File(resourcePath).mkdir();
 
+        //Obtain properties from properties file or create a properties file if none exists.
+        Properties globalProperties = new Properties();
+        establishGlobalProperties(globalProperties);
+        schoolPath = resourcePath + File.separator + globalProperties.getProperty("selectedSchool");
+        new File(schoolPath).mkdir();
+        studentFilesPath = schoolPath + File.separator + "Student Files";
+        new File(studentFilesPath).mkdir();
+        Properties localProperties = new Properties();
+        establishLocalProperties(localProperties);
         //Check on Databasse
         checkDatabase();
 
         //Create resources folder if it does not exist.
-        new File(resourcePath).mkdir();
-        new File(studentFilesPath).mkdir();
-        //Obtain properties from properties file or create a properties file if none exists.
-        Properties properties = new Properties();
-        establishProperties(properties);
-
         List<String> studentList = new ArrayList<>();
+        String listPath = localProperties.getProperty("listPath");
+        if (!listPath.isEmpty()) {
+            readStudentList(studentList, listPath);
+        }
+        ObservableList<String> observableStudentList
+                = FXCollections.observableList(studentList);
+
+        //Create elements for GUI.
+        StringProperty listStatusTextProperty = new SimpleStringProperty();
+        Label listStatusText = createStatusText(listStatusTextProperty);
+        setListStatusTextProperty(listPath, listStatusTextProperty);
+        if (listPath.isEmpty()) {
+            listStatusText.setTextFill(rgb(255, 0, 0));
+        }
+        Label listLabel = new Label("Student Name:");
+        TextField studentField = new TextField();
+        ListView<String> visibleStudentList = createVisibleStudentList(
+                observableStudentList, studentField, primaryStage);
+        Button setDirBtn = initDirectoryButton(visibleStudentList,
+                observableStudentList, studentList, studentField, localProperties,
+                listStatusTextProperty, primaryStage);
+        Label studentListText = new Label("Student List:");
+        Button addStudentButton = new Button();
+        Image addStudentImage = new Image(
+                "/studenttracker/Icons/AddStudentButton.png", 110, 66, true,
+                true);
+        addStudentButton.setGraphic(new ImageView(addStudentImage));
+        addStudentButton.setOnAction((ActionEvent event) -> {
+            initAddStudentStage(visibleStudentList, observableStudentList,
+                    studentList, studentField, listStatusTextProperty, localProperties,
+                    primaryStage);
+        });
+        Button removeStudentButton = initRemoveStudentButton(localProperties,
+                visibleStudentList, observableStudentList, studentList,
+                studentField);
+        Image removeStudentImage = new Image(
+                "/studenttracker/Icons/RemoveStudentButton.png", 110, 66, true,
+                true);
+        removeStudentButton.setGraphic(new ImageView(removeStudentImage));
+        //Create MenuBar for access to readme file.
+        MenuBar menuBar = createMenu(visibleStudentList, observableStudentList,
+                studentList, listStatusTextProperty, globalProperties,
+                localProperties, primaryStage, listStatusText, studentField);
+
         //Create GUI.
-        Scene scene = new Scene(createLayout(studentList, properties,
-                primaryStage));
-//        scene.getStylesheets().add(CertificateCreator.class.getResource(
-//                "Main.css").toExternalForm());
+        Scene scene = new Scene(primaryStageLayout(listStatusText, listLabel,
+                studentField, visibleStudentList, setDirBtn, studentListText,
+                addStudentButton, removeStudentButton, menuBar, primaryStage));
+        scene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
         primaryStage.setTitle("Student Tracker");
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
@@ -128,44 +187,335 @@ public class StudentTracker extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+        Application.launch(args);
+    }
+
+    private MenuBar createMenu(ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, StringProperty listStatusTextProperty,
+            Properties globalProperties, Properties localProperties,
+            Stage primaryStage, Label listStatusText, TextField studentField) {
+        MenuBar menuBar = new MenuBar();
+        //Create File menu item.
+        Menu fileMenu = new Menu("File");
+        Menu changeSchool = new Menu("Change School");
+        Menu assignDatabase = assignDatabaseMenuItem();
+        Menu removeSchool = removeSchoolMenuItem(visibleStudentList,
+                observableStudentList, studentList, listStatusTextProperty,
+                globalProperties, localProperties, primaryStage, changeSchool,
+                assignDatabase, listStatusText, studentField);
+
+        MenuItem addSchool = addSchoolMenuItem(visibleStudentList,
+                observableStudentList, studentList, listStatusTextProperty,
+                globalProperties, localProperties, primaryStage, changeSchool,
+                removeSchool, assignDatabase, listStatusText, studentField);
+
+        //Create readme menu item under file.
+        MenuItem readMeMenu = createReadMeMenuItem(primaryStage);
+        //Create close menu item under readme
+        MenuItem closeItem = createCloseMenuItem();
+        fileMenu.getItems().addAll(changeSchool, addSchool,
+                removeSchool, assignDatabase, readMeMenu, closeItem);
+        //Add File menu to menuBar.
+        menuBar.getMenus().add(fileMenu);
+        return menuBar;
+    }
+
+    private Menu assignDatabaseMenuItem() {
+        Menu assignDatabase = new Menu("Assign Database");
+
+        return assignDatabase;
+    }
+
+    private Menu removeSchoolMenuItem(ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, StringProperty listStatusTextProperty,
+            Properties globalProperties, Properties localProperties,
+            Stage primaryStage, Menu changeSchool, Menu assignDatabase,
+            Label listStatusText, TextField studentField) {
+        Menu removeSchool = new Menu("Remove School");
+        updateMenus(visibleStudentList, observableStudentList,
+                studentList, listStatusTextProperty, globalProperties,
+                localProperties, primaryStage, changeSchool, removeSchool,
+                assignDatabase, listStatusText, studentField);
+        return removeSchool;
+    }
+
+    private void updateMenus(ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, StringProperty listStatusTextProperty,
+            Properties globalProperties, Properties localProperties,
+            Stage primaryStage, Menu changeSchool, Menu removeSchool,
+            Menu assignDatabase, Label listStatusText, TextField studentField) {
+        changeSchool.getItems().clear();
+        removeSchool.getItems().clear();
+        assignDatabase.getItems().clear();
+        List<String> schools = Arrays.asList(globalProperties.getProperty("schools")
+                .split(";"));
+        Collections.sort(schools);
+        System.out.println("Size of school list: " + schools.size());
+        if (!schools.get(0).equals("")) {
+            for (String school : schools) {
+                MenuItem changeSchoolItem = new MenuItem(school);
+                changeSchoolItem.setOnAction((ActionEvent event) -> {
+                    if (!school.equals(globalProperties
+                            .getProperty("selectedSchool"))) {
+                        globalProperties.setProperty("selectedSchool", school);
+                        schoolPath = resourcePath + File.separator + school;
+                        studentFilesPath = schoolPath + File.separator + "Student Files";
+                        establishLocalProperties(localProperties);
+                        //Check on Databasse
+                        checkDatabase();
+                        //Create resources folder if it does not exist.
+                        if (!localProperties.getProperty("listPath").isEmpty()) {
+                            readStudentList(studentList, localProperties.getProperty("listPath"));
+                        }
+
+                        //Create elements for GUI.
+                        setListStatusTextProperty(school, listStatusTextProperty);
+                        if (localProperties.getProperty("listPath").isEmpty()) {
+                            listStatusText.setTextFill(rgb(255, 0, 0));
+                        }
+                        setFilteredList(visibleStudentList,
+                                observableStudentList, studentField);
+                    }
+                });
+                changeSchool.getItems().add(changeSchoolItem);
+                MenuItem removeSchoolItem = new MenuItem(school);
+                removeSchoolItem.setOnAction((ActionEvent event) -> {
+                    if (!school.equals(globalProperties
+                            .getProperty("selectedSchool"))) {
+                        initRemoveSchoolStage(visibleStudentList,
+                                observableStudentList, studentList, schools,
+                                school, globalProperties, localProperties,
+                                listStatusTextProperty, primaryStage,
+                                changeSchool, removeSchool, assignDatabase,
+                                studentField, listStatusText);
+                    } else {
+                        System.err.println("Cannot delete database currently in use");
+                    }
+                });
+                removeSchool.getItems().add(removeSchoolItem);
+                MenuItem assignDatabaseItem = new MenuItem(school);
+                assignDatabaseItem.setOnAction((ActionEvent event) -> {
+                    System.out.println("Renaming " + schoolPath + " to "
+                            + school);
+                    if (new File(resourcePath + File.separator + school)
+                            .exists()) {
+                        try {
+                            fileExistsAlert();
+                            try {
+                                deleteDirectory(Paths.get(resourcePath
+                                        + File.separator + school));
+                                Boolean check = new File(schoolPath)
+                                        .renameTo(new File(resourcePath
+                                                + File.separator + school));
+                                System.out.println(check);
+                                updateMenus(visibleStudentList, observableStudentList,
+                                        studentList, listStatusTextProperty, globalProperties,
+                                        localProperties, primaryStage, changeSchool, removeSchool,
+                                        assignDatabase, listStatusText, studentField);
+                            } catch (IOException io) {
+                                System.err.println("Could not delete");
+                            }
+                        } catch (IllegalArgumentException ia) {
+                        }
+                    }
+                });
+                assignDatabase.getItems().add(assignDatabaseItem);
+            }
+        }
+    }
+
+    private void initRemoveSchoolStage(ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, List<String> schools, String school,
+            Properties globalProperties, Properties localProperties,
+            StringProperty listStatusTextProperty, Stage primaryStage,
+            Menu changeSchool, Menu removeSchool, Menu assignDatabase,
+            TextField studentField, Label listStatusText) {
+        Stage removeSchoolStage = new Stage();
+        removeSchoolStage.setTitle("Remove School");
+        removeSchoolStage.initOwner(primaryStage);
+        removeSchoolStage.initModality(Modality.APPLICATION_MODAL);
+        Label removeText = new Label("Removing " + school + " will delete its "
+                + "database and all related student data. Continue?");
+        Button okButton = new Button();
+        setOkButton(okButton);
+        okButton.setOnAction((ActionEvent event) -> {
+            try {
+                deleteDirectory(Paths.get(resourcePath + File.separator
+                        + school));
+                List<String> removeList = new ArrayList<>(schools);
+                Collections.sort(removeList);
+                Boolean check = removeList.remove(school);
+                System.out.println(school + " removed? " + check);
+                for (int i = 0; i < removeList.size(); i++) {
+                    System.out.println(removeList.get(i) + " remains.");
+                }
+                if (!removeList.isEmpty()) {
+                    StringBuilder schoolSB = new StringBuilder(removeList
+                            .get(0));
+                    for (int i = 1; i < removeList.size(); i++) {
+                        schoolSB.append(";");
+                        schoolSB.append(removeList.get(i));
+                    }
+                    globalProperties.setProperty("schools",
+                            schoolSB.toString());
+                    System.out.println("schools set to:" + globalProperties
+                            .getProperty("schools"));
+                } else {
+                    globalProperties.setProperty("schools", "");
+                    System.out.println("schools set to:" + globalProperties
+                            .getProperty("schools"));
+                }
+                updateMenus(visibleStudentList,
+                        observableStudentList, studentList,
+                        listStatusTextProperty, globalProperties,
+                        localProperties, primaryStage, changeSchool,
+                        removeSchool, assignDatabase, listStatusText,
+                        studentField);
+                storeGlobalProperties(globalProperties);
+
+            } catch (IOException io) {
+                System.err.println("Could not delete directory");
+            }
+            removeSchoolStage.close();
+        });
+        Button cancelButton = new Button();
+        Image cancelImage = new Image(
+                "/studenttracker/Icons/CancelButton.png", 55, 33, true,
+                true);
+        cancelButton.setGraphic(new ImageView(cancelImage));
+        cancelButton.setId("cancelButton");
+        cancelButton.setOnAction((ActionEvent event) -> {
+            removeSchoolStage.close();
+        });
+
+        Scene removeScene = new Scene(removeSchoolStageLayout(removeText,
+                okButton, cancelButton));
+        removeScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
+        removeSchoolStage.setScene(removeScene);
+        removeSchoolStage.show();
+    }
+
+    private VBox removeSchoolStageLayout(Label removeText, Button okButton,
+            Button cancelButton) {
+        HBox buttons = new HBox();
+        buttons.setId("button-box");
+        buttons.getChildren().addAll(okButton, cancelButton);
+        VBox layout = new VBox();
+        layout.setId("layout");
+        layout.getChildren().addAll(removeText, buttons);
+        return layout;
+    }
+
+    private MenuItem addSchoolMenuItem(ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, StringProperty listStatusTextProperty,
+            Properties globalProperties, Properties localProperties,
+            Stage primaryStage, Menu changeSchool, Menu removeSchool,
+            Menu assignDatabase, Label listStatusText, TextField studentField) {
+        MenuItem addSchool = new MenuItem("Add School");
+        addSchool.setOnAction((ActionEvent event) -> {
+            initAddSchoolStage(visibleStudentList, observableStudentList,
+                    studentList, listStatusTextProperty, globalProperties,
+                    localProperties, primaryStage, changeSchool, removeSchool,
+                    assignDatabase, listStatusText, studentField);
+        });
+        return addSchool;
+    }
+
+    private void setListStatusTextProperty(String listPath,
+            StringProperty listStatusTextProperty) {
+        if (listPath.isEmpty()) {
+            listStatusTextProperty.set("No student list has been selected");
+        } else {
+            listStatusTextProperty.set("Selected Student List:\n"
+                    + listPath);
+        }
     }
 
     private void checkDatabase() {
-        File file = new File(dbName + ".db");
+        File file = new File(schoolPath + File.separator + File.separator
+                + dbName + ".db");
 //        if (!file.exists()) {
         try {
             Class.forName("org.sqlite.JDBC");
             try {
-                Connection conn
-                        = DriverManager.getConnection("jdbc:sqlite:" + dbName + ".db");
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+                        + schoolPath + File.separator + dbName + ".db");
                 Statement stat = conn.createStatement();
                 try {
                     stat.executeUpdate("drop table if exists students;");
+                    stat.executeUpdate("drop table if exists archive;");
                     System.out.println("Dropping students table");
                 } catch (SQLException sql) {
-                    System.err.println("Could not drop table students.");
+                    sqlErrorAlert(getTrace(sql));
                 }
                 try {
-                    stat.executeUpdate("create table students (fullName, firstName, lastName, indStart, indEnd, groupStart, groupEnd, checkInStart, checkInEnd, walkIns, forms, notes, hasIEP, has504, hasEval);");
-                } catch (SQLException sql2) {
-                    System.err.println("Could not update table.");
+                    stat.executeUpdate("create table students (fullName, "
+                            + "firstName, lastName, indStart, indEnd, "
+                            + "groupStart, groupEnd, checkInStart, checkInEnd, "
+                            + "walkIns, forms, notes, hasIEP, has504,"
+                            + " hasEval);");
+                    stat.executeUpdate("create table archive (fullName, "
+                            + "firstName, lastName, indStart, indEnd, "
+                            + "groupStart, groupEnd, checkInStart, checkInEnd, "
+                            + "walkIns, forms, notes, hasIEP, has504,"
+                            + " hasEval);");
+                } catch (SQLException sql) {
+                    sqlErrorAlert(getTrace(sql));
+                } finally {
+                    conn.close();
                 }
             } catch (SQLException sql) {
-                System.err.println("Could not connect to database "
-                        + dbName);
+                sqlErrorAlert(getTrace(sql));
+
             }
         } catch (ClassNotFoundException cnf) {
-            System.err.println("Could not find java database class");
+            sqlErrorAlert(getTrace(cnf));
         }
 //        }
+    }
+
+    private String getTrace(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
+    }
+
+    private void removeFromStudentTable(String name) {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            try {
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+                        + schoolPath + File.separator + dbName + ".db");
+                Statement stat = conn.createStatement();
+                try {
+                    stat.executeUpdate("delete from students where fullName = '"
+                            + name + "';");
+                } catch (SQLException sql) {
+                    sqlErrorAlert(getTrace(sql));
+                } finally {
+                    conn.close();
+                }
+            } catch (SQLException sql) {
+                sqlErrorAlert(getTrace(sql));
+            }
+        } catch (ClassNotFoundException cnf) {
+            sqlErrorAlert(getTrace(cnf));
+        }
     }
 
     private void modifyDatabase(Category cat, Student student) {
         try {
             Class.forName("org.sqlite.JDBC");
             try {
-                Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbName + ".db");
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+                        + schoolPath + File.separator + dbName + ".db");
                 String val = null;
                 switch (cat.toString()) {
                     case "indStart":
@@ -206,22 +556,24 @@ public class StudentTracker extends Application {
                     default:
                 }
                 try {
-                    PreparedStatement update = conn.prepareStatement("update students set " + cat.toString() + " = '" + val + "' where fullName = '" + student.getFullName() + "';");
+                    PreparedStatement update = conn.prepareStatement("update "
+                            + "students set " + cat.toString() + " = '" + val
+                            + "' where fullName = '" + student.getFullName()
+                            + "';");
                     update.addBatch();
                     conn.setAutoCommit(false);
                     update.executeBatch();
                     conn.setAutoCommit(true);
-                    System.out.println("Database modified, " + cat.toString() + " set to " + val + ".");
                 } catch (SQLException sql) {
-                    System.err.println("Unable to prepare statement.");
+                    sqlErrorAlert(getTrace(sql));
                 }
 
                 conn.close();
             } catch (SQLException sql) {
-                System.err.println("Could not connect to database for modification.");
+                sqlErrorAlert(getTrace(sql));
             }
         } catch (ClassNotFoundException cnf) {
-            System.err.println("Could not find class org.sqlite.JDBC");
+            sqlErrorAlert(getTrace(cnf));
         }
     }
 
@@ -229,10 +581,11 @@ public class StudentTracker extends Application {
         try {
             Class.forName("org.sqlite.JDBC");
             try {
-                Connection conn
-                        = DriverManager.getConnection("jdbc:sqlite:" + dbName + ".db");
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+                        + schoolPath + File.separator + dbName + ".db");
                 PreparedStatement prep = conn.prepareStatement("insert into"
-                        + " students values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                        + " students values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                        + "?, ?, ?, ?);");
                 prep.setString(1, student.getFullName());
                 prep.setString(2, student.getFirstName());
                 prep.setString(3, student.getLastName());
@@ -248,18 +601,17 @@ public class StudentTracker extends Application {
                 prep.setString(13, String.valueOf(student.getIEP()));
                 prep.setString(14, String.valueOf(student.get504()));
                 prep.setString(15, String.valueOf(student.getEval()));
-                System.out.println("Added all fields to database!");
                 prep.addBatch();
                 conn.setAutoCommit(false);
                 prep.executeBatch();
                 conn.setAutoCommit(true);
                 conn.close();
             } catch (SQLException sql) {
-                System.err.println("Could not connect to database for access.");
+                sqlErrorAlert(getTrace(sql));
 
             }
         } catch (ClassNotFoundException cnf) {
-            System.err.println("Could not find class org.sqlite.JDBC");
+            sqlErrorAlert(getTrace(cnf));
         }
     }
 
@@ -267,58 +619,40 @@ public class StudentTracker extends Application {
         try {
             Class.forName("org.sqlite.JDBC");
             try {
-                Connection conn
-                        = DriverManager.getConnection("jdbc:sqlite:" + dbName + ".db");
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+                        + schoolPath + File.separator + dbName + ".db");
                 try {
                     Statement stat = conn.createStatement();
-                    System.out.println("created statement");
-                    ResultSet rs = stat.executeQuery("select * from students where "
-                            + "fullName = '" + student.getFullName() + "';");
-                    System.out.println("Got result set");
-                    System.out.println("Found student, getting data...");
+                    ResultSet rs = stat.executeQuery("select * from students "
+                            + "where fullName = '" + student.getFullName()
+                            + "';");
                     student.setStartInd(rs.getString("indStart"));
-                    System.out.println(student.getStartInd());
                     student.setEndInd(rs.getString("indEnd"));
-                    System.out.println(student.getEndInd());
                     student.setStartGroup(rs.getString("groupStart"));
-                    System.out.println(student.getStartGroup());
                     student.setEndGroup(rs.getString("groupEnd"));
-                    System.out.println(student.getEndGroup());
                     student.setStartCheckIn(rs.getString("checkInStart"));
-                    System.out.println(student.getStartCheckIn());
                     student.setEndCheckIn(rs.getString("checkInEnd"));
-                    System.out.println(student.getEndCheckIn());
                     student.setWalkIns(rs.getString("walkIns"));
-                    System.out.println(student.getWalkIns());
                     student.setForms(rs.getString("forms"));
-                    System.out.println(student.getForms());
                     student.setNotes(rs.getString("notes"));
                     student.setIEP(Boolean.valueOf(rs.getString("hasIEP")));
                     student.set504(Boolean.valueOf(rs.getString("has504")));
                     student.setEval(Boolean.valueOf(rs.getString("hasEval")));
                     rs.close();
                 } catch (SQLException sql) {
-                    System.out.println("Couldn't find student, adding to database...");
                     PreparedStatement prep = conn.prepareStatement("insert into"
-                            + " students values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-                    System.out.println("Prepared a statement!");
+                            + " students values (?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                            + "?, ?, ?, ?, ?, ?);");
                     prep.setString(1, student.getFullName());
-                    System.out.println("Setting fullName to " + student.getFullName());
                     prep.setString(2, student.getFirstName());
-                    System.out.println("Setting firstName to " + student.getFirstName());
                     prep.setString(3, student.getLastName());
-                    System.out.println("Setting kastName to " + student.getLastName());
                     prep.setString(4, student.getStartInd());
-                    System.out.println("Setting startInd to " + student.getStartInd());
                     prep.setString(5, student.getEndInd());
-                    System.out.println("Setting endInd to " + student.getEndInd());
                     prep.setString(6, student.getStartGroup());
-                    System.out.println("Setting startGroup to " + student.getStartGroup());
                     prep.setString(7, student.getEndGroup());
                     prep.setString(8, student.getStartCheckIn());
                     prep.setString(9, student.getEndCheckIn());
                     prep.setString(10, student.getWalkIns());
-                    System.out.println("Setting walkIns to " + student.getWalkIns());
                     prep.setString(11, student.getForms());
                     prep.setString(12, String.valueOf(student.getIEP()));
                     prep.setString(13, String.valueOf(student.get504()));
@@ -330,26 +664,18 @@ public class StudentTracker extends Application {
                 }
                 conn.close();
             } catch (SQLException sql) {
-                System.err.println("Could not connect to database for access.");
+                sqlErrorAlert(getTrace(sql));
             }
 
         } catch (ClassNotFoundException cnf) {
-            System.err.println("Could not find class org.sqlite.JDBC");
+            sqlErrorAlert(getTrace(cnf));
         }
     }
 
-    private ListView<String> createVisibleStudentList(List<String> studentList,
-            TextField studentField, Stage primaryStage, String stdntLstPath, StringProperty stdntLstTxt) {
-        //Creates visible list for GUI
-
-        //Create internal ObservableList based on studentList.
-        ObservableList<String> observableStudentList
-                = FXCollections.observableList(studentList);
-        //Initialize uneditable list visible in GUI.
-        ListView<String> visibleStudentList = new ListView<>();
-        visibleStudentList.setEditable(false);
-        FilteredList<String> filteredItems = new FilteredList<String>(
-                observableStudentList, p -> true);
+    public void setFilteredList(ListView<String> listView,
+            ObservableList<String> observableList, TextField studentField) {
+        FilteredList<String> filteredItems = new FilteredList<>(observableList,
+                p -> true);
         //Enable filtering of visibleStudentList based on entry in TextField studentField
         studentField.textProperty().addListener((obs, oldVal, newVal) -> {
             Platform.runLater(() -> {
@@ -364,7 +690,18 @@ public class StudentTracker extends Application {
             });
         });
         //As filteredItems updates, visibleStudentList does also.
-        visibleStudentList.setItems(filteredItems);
+        listView.setItems(filteredItems);
+    }
+
+    private ListView<String> createVisibleStudentList(
+            ObservableList<String> observableStudentList,
+            TextField studentField, Stage primaryStage) {
+        //Creates visible list for GUI
+
+        //Initialize uneditable list visible in GUI.
+        ListView<String> visibleStudentList = new ListView<>();
+        visibleStudentList.setEditable(false);
+        setFilteredList(visibleStudentList, observableStudentList, studentField);
         //Initiate certificate creation process upon click on list item.
         visibleStudentList.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() == 2 && !event.isConsumed()) {
@@ -372,42 +709,31 @@ public class StudentTracker extends Application {
                         .getSelectedItem().trim();
                 if (selectedStudent != null) {
                     Student student = new Student(selectedStudent);
-                    File target = new File(studentFilesPath + File.separator + student.getFullName());
+                    File target = new File(studentFilesPath + File.separator
+                            + student.getFullName());
                     target.mkdir();
                     accessDatabase(student);
                     initStudentStage(student, primaryStage);
                 }
             }
         });
-        if (stdntLstPath.isEmpty()) {
-            stdntLstTxt.set("No student list has been selected");
-        } else {
-            stdntLstTxt.set("Selected Student List:\n" + stdntLstPath);
-            extractStudentList(studentList, stdntLstPath);
-        }
         return visibleStudentList;
-        
     }
 
     private void initStudentStage(Student student, Stage primaryStage) {
         String studentName = student.getFullName();
         Stage studentStage = new Stage();
         studentStage.initOwner(primaryStage);
-        studentStage.initModality(Modality.WINDOW_MODAL);
+        studentStage.initModality(Modality.APPLICATION_MODAL);
         studentStage.setTitle("Counseling");
         CheckBox indBox = new CheckBox("Individual");
         indBox.setId("indB");
         setCheck(indBox, student);
 
         indBox.setOnMouseClicked((MouseEvent a) -> {
-            System.out.println("indBox clicked! values for text choice:");
-            System.out.println(student.getStartInd());
-            System.out.println(student.getEndInd());
             if (student.getStartInd() == null && student.getEndInd() == null) {
-                System.out.println("Going with setting start date");
                 addBoxFunction(indBox, student, Category.indStart);
             } else if (student.getEndInd() == null) {
-                System.out.println("Going with setting end date");
                 addBoxFunction(indBox, student, Category.indEnd);
             } else {
                 indBox.setIndeterminate(true);
@@ -418,7 +744,8 @@ public class StudentTracker extends Application {
         groupBox.setId("groupB");
         setCheck(groupBox, student);
         groupBox.setOnMouseClicked((MouseEvent a) -> {
-            if (student.getStartGroup() == null && student.getEndGroup() == null) {
+            if (student.getStartGroup() == null
+                    && student.getEndGroup() == null) {
                 addBoxFunction(groupBox, student, Category.groupStart);
             } else if (student.getEndGroup() == null) {
                 addBoxFunction(groupBox, student, Category.groupEnd);
@@ -430,7 +757,8 @@ public class StudentTracker extends Application {
         checkInBox.setId("checkInB");
         setCheck(checkInBox, student);
         checkInBox.setOnMouseClicked((MouseEvent a) -> {
-            if (student.getStartCheckIn() == null && student.getEndCheckIn() == null) {
+            if (student.getStartCheckIn() == null
+                    && student.getEndCheckIn() == null) {
                 addBoxFunction(checkInBox, student, Category.checkInStart);
             } else if (student.getEndCheckIn() == null) {
                 addBoxFunction(checkInBox, student, Category.checkInEnd);
@@ -439,35 +767,53 @@ public class StudentTracker extends Application {
             }
         });
 
-        Text modDate = new Text("Modify dates");
+        Label modDate = new Label("Modify dates");
+        modDate.setId("modDate");
         modDate.setOnMouseClicked((MouseEvent event) -> {
             modifyStudentDialog(student, indBox, groupBox, checkInBox);
         });
         Button addWalkInButton = createAddWalkInButton(student);
-
-        Button detailsButton = createDetailsButton(student);
-
-        VBox studentBox = new VBox();
-        Text title = new Text("Counseling enrollment for " + studentName);
-        HBox buttons = new HBox();
-        buttons.getChildren().addAll(addWalkInButton, detailsButton);
-        studentBox.getChildren().addAll(title, indBox, groupBox, checkInBox, modDate, buttons);
-        Scene studentScene = new Scene(studentBox);
+        Button detailsButton = createDetailsButton(student, studentStage);
+        Label title = new Label("Counseling enrollment for " + studentName);
+        Scene studentScene = new Scene(studentStageLayout(indBox, groupBox,
+                checkInBox, modDate, addWalkInButton, detailsButton, title));
+        studentScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
         studentStage.setScene(studentScene);
         studentStage.show();
     }
 
-    private Button createDetailsButton(Student student) {
+    private VBox studentStageLayout(CheckBox indBox, CheckBox groupBox,
+            CheckBox checkInBox, Label modDate, Button addWalkInButton,
+            Button detailsButton, Label title) {
+        VBox studentBox = new VBox();
+        HBox buttons = new HBox();
+        buttons.setId("button-box");
+        buttons.getChildren().addAll(addWalkInButton, detailsButton);
+        studentBox.getChildren().addAll(title, indBox, groupBox, checkInBox,
+                modDate);
+        VBox contentBox = new VBox();
+        contentBox.setId("layout");
+        contentBox.getChildren().addAll(studentBox, buttons);
+        return contentBox;
+    }
+
+    private Button createDetailsButton(Student student, Stage studentStage) {
         Button detailsButton = new Button();
-        detailsButton.setText("Details");
+        Image detailsImage = new Image(
+                "/studenttracker/Icons/DetailsButton.png", 110, 66, true, true);
+        detailsButton.setGraphic(new ImageView(detailsImage));
         detailsButton.setOnAction((ActionEvent event) -> {
-            initDetailsStage(student);
+            initDetailsStage(student, studentStage);
         });
         return detailsButton;
     }
 
-    private void initDetailsStage(Student student) {
+    private void initDetailsStage(Student student, Stage studentStage) {
         Stage detailsStage = new Stage();
+        detailsStage.setTitle("Student Details");
+        detailsStage.initOwner(studentStage);
+        detailsStage.initModality(Modality.APPLICATION_MODAL);
         CheckBox IEPBox = new CheckBox("IEP");
         if (student.getIEP()) {
             IEPBox.setSelected(true);
@@ -495,53 +841,95 @@ public class StudentTracker extends Application {
             modifyDatabase(Category.hasEval, student);
             evalBox.setSelected(student.getEval());
         });
-        Text formText = new Text("Forms:");
+        Label formText = new Label("Forms:");
         ListView<String> visibleFormList = new ListView<>();
+        visibleFormList.setEditable(false);
+        visibleFormList.setMaxSize(280, 120);
         List forms = new ArrayList<>();
         if (!student.getForms().isEmpty()) {
             forms.add(student.getForms().split(";"));
         }
-        visibleFormList.setEditable(false);
+
         visibleFormList.setItems(FXCollections.observableList(forms));
         visibleFormList.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() == 2 && !event.isConsumed()) {
 
                 try {
                     if (Desktop.isDesktopSupported()) {
-                        String fileName = visibleFormList.getSelectionModel().getSelectedItem();
-                        Desktop.getDesktop().open(new File(studentFilesPath + File.separator + student.getFullName() + File.separator + fileName));
+                        String fileName = visibleFormList.getSelectionModel()
+                                .getSelectedItem();
+                        if (fileName != null) {
+                            Desktop.getDesktop().open(new File(studentFilesPath
+                                    + File.separator + student.getFullName()
+                                    + File.separator + fileName));
+                        }
                     }
                 } catch (IOException io) {
                 }
             }
         });
 
-        Button addFormButton = initAddFormButton(student, detailsStage, forms, visibleFormList);
+        Button addFormButton = initAddFormButton(student, detailsStage, forms,
+                visibleFormList);
 
-        Button removeFormButton = initRemoveFormButton(student, detailsStage, forms, visibleFormList);
+        Button removeFormButton = initRemoveFormButton(student, detailsStage,
+                forms, visibleFormList);
 
-        HBox formButtons = new HBox();
-        formButtons.getChildren().addAll(addFormButton, removeFormButton);
-        Text noteText = new Text("Notes:");
+        Label noteText = new Label("Notes:");
         TextArea noteArea = new TextArea();
         noteArea.setText(student.getNotes());
-        Button okButton = new Button("OK");
+        noteArea.setMaxSize(280, 500);
+        noteArea.setWrapText(true);
+        Button okButton = new Button();
+        Image okImage = new Image("/studenttracker/Icons/OKButton.png", 55, 33,
+                true, true);
+        okButton.setGraphic(new ImageView(okImage));
+        okButton.setId("okButton");
         okButton.setOnAction((ActionEvent event) -> {
             student.setNotes(noteArea.getText());
             modifyDatabase(Category.notes, student);
             detailsStage.close();
         });
-        VBox stageLayout = new VBox();
-        stageLayout.getChildren().addAll(IEPBox, ffBox, evalBox, formText, visibleFormList, formButtons, noteText, noteArea, okButton);
-        Scene scene = new Scene(stageLayout);
-        detailsStage.setScene(scene);
+
+        Scene detailsScene = new Scene(detailsStageLayout(IEPBox, ffBox,
+                evalBox, formText, visibleFormList,
+                addFormButton, removeFormButton, noteText,
+                noteArea, okButton), 300, 500);
+        detailsScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
+        detailsStage.setScene(detailsScene);
         detailsStage.show();
     }
 
-    private Button initAddFormButton(Student student, Stage parentStage, List forms, ListView<String> visibleList) {
-        Button addFormButton = new Button("Add Form");
+    private VBox detailsStageLayout(CheckBox IEPBox, CheckBox ffBox,
+            CheckBox evalBox, Label formText, ListView<String> visibleFormList,
+            Button addFormButton, Button removeFormButton, Label noteText,
+            TextArea noteArea, Button okButton) {
+        HBox formButtons = new HBox();
+        formButtons.setId("button-box");
+        formButtons.getChildren().addAll(addFormButton, removeFormButton);
+        VBox noteLayout = new VBox();
+        noteLayout.getChildren().addAll(noteText, noteArea);
+        VBox formLayout = new VBox();
+        formLayout.getChildren().addAll(formText, visibleFormList);
+        VBox checkBoxLayout = new VBox();
+        checkBoxLayout.getChildren().addAll(IEPBox, ffBox, evalBox);
+        VBox stageLayout = new VBox();
+        stageLayout.setId("layout");
+        stageLayout.getChildren().addAll(checkBoxLayout, formLayout,
+                formButtons, noteLayout, okButton);
+        return stageLayout;
+    }
+
+    private Button initAddFormButton(Student student, Stage parentStage,
+            List forms, ListView visibleList) {
+        Button addFormButton = new Button();
+        Image addFormImage = new Image(
+                "/studenttracker/Icons/AddFormButton.png", 110, 66, true, true);
+        addFormButton.setGraphic(new ImageView(addFormImage));
         addFormButton.setOnAction((ActionEvent event) -> {
-            String studentPath = studentFilesPath + File.separator + student.getFullName();
+            String studentPath = studentFilesPath + File.separator
+                    + student.getFullName();
             FileChooser chooseList = new FileChooser();
             chooseList.setInitialDirectory(new File(studentPath));
             chooseList.setTitle("Select Form File");
@@ -549,7 +937,8 @@ public class StudentTracker extends Application {
             if (formFile != null) {
                 String fileName = formFile.getName();
                 try {
-                    copy(formFile, new File(studentPath + File.separator + fileName));
+                    copy(formFile, new File(studentPath + File.separator
+                            + fileName));
                     student.addForms(fileName);
                     forms.add(fileName);
                     modifyDatabase(Category.forms, student);
@@ -561,13 +950,21 @@ public class StudentTracker extends Application {
         return addFormButton;
     }
 
-    private Button initRemoveFormButton(Student student, Stage parentStage, List forms, ListView<String> visibleList) {
-        Button removeFormButton = new Button("Remove");
+    private Button initRemoveFormButton(Student student, Stage parentStage,
+            List forms, ListView visibleList) {
+        Button removeFormButton = new Button();
+        Image removeFormImage = new Image(
+                "/studenttracker/Icons/RemoveFormButton.png", 110, 66,
+                true, true);
+        removeFormButton.setGraphic(new ImageView(removeFormImage));
         removeFormButton.setOnAction((ActionEvent event) -> {
             if (!forms.isEmpty()) {
-                String fileName = (String) visibleList.getSelectionModel().getSelectedItem();
+                String fileName = (String) visibleList.getSelectionModel()
+                        .getSelectedItem();
                 if (fileName != null) {
-                    File removeFile = new File(studentFilesPath + File.separator + student.getFullName() + File.separator + fileName);
+                    File removeFile = new File(studentFilesPath + File.separator
+                            + student.getFullName() + File.separator
+                            + fileName);
                     removeFile.delete();
                     forms.remove(fileName);
                     student.removeForm(fileName);
@@ -581,7 +978,10 @@ public class StudentTracker extends Application {
 
     private Button createAddWalkInButton(Student student) {
         Button addWalkInButton = new Button();
-        addWalkInButton.setText("Add Walk-In");
+        Image walkInImage = new Image(
+                "/studenttracker/Icons/AddWalkInButton.png", 110, 66,
+                true, true);
+        addWalkInButton.setGraphic(new ImageView(walkInImage));
         addWalkInButton.setOnAction((final ActionEvent addWalkAct) -> {
             String walkInDate = LocalDateTime.now().format(
                     DateTimeFormatter.ofPattern("MM-dd-yyyy"));
@@ -602,23 +1002,16 @@ public class StudentTracker extends Application {
     }
 
     private void setCheck(CheckBox box, Student student) {
-        System.out.println("Checking if box should be checked!");
         switch (box.getId()) {
             case "indB":
-                System.out.println("indEnd = " + student.getEndInd());
-                System.out.println("indStart = " + student.getStartInd());
                 if (student.getEndInd() != null) {
                     box.setIndeterminate(true);
-                    System.out.println("Setting box to indeterminate");
                 } else if (student.getStartInd() != null) {
-                    System.out.println("startInd = " + student.getStartInd());
                     box.setIndeterminate(false);
                     box.setSelected(true);
-                    System.out.println("Setting box to checked");
                 } else {
                     box.setIndeterminate(false);
                     box.setSelected(false);
-                    System.out.println("Setting box to unchecked");
                 }
                 break;
             case "groupB":
@@ -642,17 +1035,18 @@ public class StudentTracker extends Application {
         }
     }
 
-    private void modifyStudentDialog(Student student, CheckBox indBox, CheckBox groupBox, CheckBox checkInBox) {
+    private void modifyStudentDialog(Student student, CheckBox indBox,
+            CheckBox groupBox, CheckBox checkInBox) {
 
         //Declare nodes for dialog box
-        Text warn = new Text("Replace any incorrect dates and press the"
+        Label warn = new Label("Replace any incorrect dates and press the"
                 + " \"OK\".");
-        Text startIndText = new Text("Independent counseling start date:");
-        Text endIndText = new Text("Independent counseling end date:");
-        Text startGroupText = new Text("Group counseling start date:");
-        Text endGroupText = new Text("Group counseling end date:");
-        Text startCheckInText = new Text("Check-in counseling start date:");
-        Text endCheckInText = new Text("Check-in counseling end date:");
+        Label startIndText = new Label("Independent counseling start date:");
+        Label endIndText = new Label("Independent counseling end date:");
+        Label startGroupText = new Label("Group counseling start date:");
+        Label endGroupText = new Label("Group counseling end date:");
+        Label startCheckInText = new Label("Check-in counseling start date:");
+        Label endCheckInText = new Label("Check-in counseling end date:");
 
         TextField startIndField = new TextField();
         TextField endIndField = new TextField();
@@ -661,8 +1055,6 @@ public class StudentTracker extends Application {
         TextField startCheckInField = new TextField();
         TextField endCheckInField = new TextField();
         startIndField.setText(student.getStartInd());
-        System.out.println("student indStart date is " + student.getStartInd());
-        System.out.println("Setting startIndField's text to " + startIndField.getText());
         endIndField.setText(student.getEndInd());
         startGroupField.setText(student.getStartGroup());
         endGroupField.setText(student.getEndGroup());
@@ -670,50 +1062,56 @@ public class StudentTracker extends Application {
         endCheckInField.setText(student.getEndCheckIn());
         Stage modStudentStage = new Stage();
 
-        Button okBtn = new Button("OK");
-        okBtn.setOnAction((ActionEvent event) -> {
+        Button okButton = new Button();
+        Image okImage = new Image("/studenttracker/Icons/OKButton.png", 55, 33,
+                true, true);
+        okButton.setGraphic(new ImageView(okImage));
+        okButton.setId("okButton");
+        okButton.setOnAction((ActionEvent event) -> {
             try {
-                System.out.println("startIndField's text \"" + startIndField.getText() + "\"");
                 checkFieldText(startIndField, student);
-                System.out.println("Setting startInd to " + student.getStartInd());
-                System.out.println("endIndField's text \"" + endIndField.getText() + "\"");
                 checkFieldText(endIndField, student);
-                System.out.println("Setting endInd to " + student.getEndInd());
                 checkFieldText(startGroupField, student);
                 checkFieldText(endGroupField, student);
                 checkFieldText(startCheckInField, student);
                 checkFieldText(endCheckInField, student);
 
-                if (startIndField.getText() == null || startIndField.getText().equals("")) {
+                if (startIndField.getText() == null || startIndField.getText()
+                        .equals("")) {
                     student.setStartInd(null);
                 } else {
                     student.setStartInd(startIndField.getText());
                 }
-                if (endIndField.getText() == null || endIndField.getText().equals("")) {
+                if (endIndField.getText() == null || endIndField.getText()
+                        .equals("")) {
                     student.setEndInd(null);
                 } else {
                     student.setEndInd(endIndField.getText());
                 }
 
-                if (startGroupField.getText() == null || startGroupField.getText().equals("")) {
+                if (startGroupField.getText() == null || startGroupField
+                        .getText().equals("")) {
                     student.setStartGroup(null);
                 } else {
                     student.setStartGroup(startGroupField.getText());
                 }
 
-                if (endGroupField.getText() == null || endGroupField.getText().equals("")) {
+                if (endGroupField.getText() == null || endGroupField.getText()
+                        .equals("")) {
                     student.setEndGroup(null);
                 } else {
                     student.setEndGroup(endGroupField.getText());
                 }
 
-                if (startCheckInField.getText() == null || startCheckInField.getText().equals("")) {
+                if (startCheckInField.getText() == null || startCheckInField
+                        .getText().equals("")) {
                     student.setStartCheckIn(null);
                 } else {
                     student.setStartCheckIn(startCheckInField.getText());
                 }
 
-                if (endCheckInField.getText() == null || endCheckInField.getText().equals("")) {
+                if (endCheckInField.getText() == null || endCheckInField
+                        .getText().equals("")) {
                     student.setEndCheckIn(null);
                 } else {
                     student.setEndCheckIn(endCheckInField.getText());
@@ -723,12 +1121,6 @@ public class StudentTracker extends Application {
             } catch (DataFormatException df) {
                 improperFormatAlert();
             }
-//            student.setStartInd((startIndField.getText().equals("")  ? null : startIndField.getText()));
-//            student.setEndInd((endIndField.getText().equals("") ? null : endIndField.getText()));
-//            student.setStartGroup((startGroupField.getText().equals("") ? null : startGroupField.getText()));
-//            student.setEndGroup((endGroupField.getText().equals("") ? null : endGroupField.getText()));
-//            student.setStartInd((startCheckInField.getText().equals("") ? null : startCheckInField.getText()));
-//            student.setStartInd((endCheckInField.getText().equals("") ? null : endCheckInField.getText()));
 
             setCheck(indBox, student);
             setCheck(groupBox, student);
@@ -736,13 +1128,20 @@ public class StudentTracker extends Application {
         });
 
         //Lay out the stage
-        Button cancelBtn = new Button("Cancel");
-        cancelBtn.setOnAction((ActionEvent event) -> {
+        Button cancelButton = new Button();
+        Image cancelImage = new Image("/studenttracker/Icons/CancelButton.png",
+                55, 33, true, true);
+        cancelButton.setGraphic(new ImageView(cancelImage));
+        cancelButton.setOnAction((ActionEvent event) -> {
             modStudentStage.close();
         });
+        HBox buttonBox = new HBox();
+        buttonBox.setId("button-box");
+        buttonBox.getChildren().addAll(okButton, cancelButton);
         modStudentStage.initModality(Modality.APPLICATION_MODAL);
         VBox stageLayout = new VBox();
         GridPane datePane = new GridPane();
+        datePane.setId("gridPane");
         datePane.add(startIndText, 1, 1);
         datePane.add(endIndText, 1, 2);
         datePane.add(startGroupText, 1, 3);
@@ -755,60 +1154,24 @@ public class StudentTracker extends Application {
         datePane.add(endGroupField, 2, 4);
         datePane.add(startCheckInField, 2, 5);
         datePane.add(endCheckInField, 2, 6);
-        datePane.add(okBtn, 1, 7);
-        datePane.add(cancelBtn, 2, 7);
+        datePane.add(buttonBox, 1, 7);
         stageLayout.getChildren().addAll(warn, datePane);
         Scene scene = new Scene(stageLayout);
+        scene.getStylesheets().add(getClass().getResource("Main.css")
+                .toExternalForm());
         modStudentStage.setScene(scene);
         modStudentStage.show();
 
     }
 
-    private void checkFieldText(TextField field, Student student) throws DataFormatException {
+    private void checkFieldText(TextField field, Student student)
+            throws DataFormatException {
         if (field.getText() == null || field.getText().equals("")) {
-        } else if (Pattern.matches("[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]", field.getText())) {
+        } else if (Pattern.matches("[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]",
+                field.getText())) {
         } else {
             throw new DataFormatException();
         }
-    }
-
-    private void initModBtn(Button button, TextField field, Student student, String id) {
-        button.setOnAction((ActionEvent e) -> {
-            String date = field.getText();
-            if (Pattern.matches("[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]", date)) {
-                switch (id) {
-                    case "indB":
-                        if ("start".equals(button.getId())) {
-                            student.setStartInd(date);
-                            modifyDatabase(Category.indStart, student);
-                        } else if ("end".equals(button.getId())) {
-                            student.setEndInd(date);
-                            modifyDatabase(Category.indEnd, student);
-                        }
-                        break;
-                    case "groupB":
-                        if ("start".equals(button.getId())) {
-                            student.setStartGroup(date);
-                            modifyDatabase(Category.groupStart, student);
-                        } else if ("end".equals(button.getId())) {
-                            student.setEndGroup(date);
-                            modifyDatabase(Category.groupEnd, student);
-                        }
-                        break;
-                    case "checkInB":
-                        if ("start".equals(button.getId())) {
-                            student.setStartInd(date);
-                            modifyDatabase(Category.checkInStart, student);
-                        } else if ("end".equals(button.getId())) {
-                            student.setEndInd(date);
-                            modifyDatabase(Category.checkInEnd, student);
-                        }
-                        break;
-                }
-            } else {
-                improperFormatAlert();
-            }
-        });
     }
 
     private void addBoxFunction(CheckBox box, Student student, Category cat) {
@@ -846,7 +1209,8 @@ public class StudentTracker extends Application {
             default:
                 area = "";
         }
-        if (!checkStudentData(cat, student) && !checkStudentData(catComp, student)) {
+        if (!checkStudentData(cat, student) && !checkStudentData(catComp,
+                student)) {
             dialog.setContentText("Set start date for"
                     + student.getFullName() + "'s " + area + "counseling?");
 
@@ -857,15 +1221,14 @@ public class StudentTracker extends Application {
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             String res = result.get();
-            if (Pattern.matches("[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]", res)) {
+            if (Pattern.matches("[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]",
+                    res)) {
                 modifyStudent(cat, student, res);
                 modifyDatabase(cat, student);
             } else {
                 improperFormatAlert();
-                System.out.println("Unselecting box");
             }
         }
-        System.out.println("Category passed to checkStudent is " + cat.toString());
         setCheck(box, student);
     }
 
@@ -917,11 +1280,9 @@ public class StudentTracker extends Application {
     private void modifyStudent(Category cat, Student student, String date) {
         switch (cat.toString()) {
             case "indStart":
-                System.out.println("indStart is being modified to " + date);
                 student.setStartInd(date);
                 break;
             case "indEnd":
-                System.out.println("indEnd is being modified to " + date);
                 student.setEndInd(date);
                 break;
             case "groupStart":
@@ -945,85 +1306,256 @@ public class StudentTracker extends Application {
         }
     }
 
+    private void fileExistsAlert() {
+        Alert fileExistsAlert = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "File already exists. Overwrite?");
+        DialogPane dialogPane = fileExistsAlert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("Main.css")
+                .toExternalForm());
+        Button okButton = (Button) fileExistsAlert.getDialogPane()
+                .lookupButton(ButtonType.OK);
+        Image okImage = new Image(
+                "/studenttracker/Icons/OKButton.png", 55, 33, true,
+                true);
+        okButton.setGraphic(new ImageView(okImage));
+        okButton.setText(null);
+        Button cancelButton = (Button) fileExistsAlert
+                .getDialogPane().lookupButton(ButtonType.CANCEL);
+        Image cancelImage = new Image(
+                "/studenttracker/Icons/CancelButton.png", 55, 33,
+                true, true);
+        cancelButton.setGraphic(new ImageView(cancelImage));
+        cancelButton.setText(null);
+        fileExistsAlert.showAndWait().ifPresent(response -> {
+
+            if (response != ButtonType.OK) {
+                throw new IllegalArgumentException();
+            }
+        });
+    }
+
+    private void sqlErrorAlert(String trace) {
+        Alert sqlErrorAlert = new Alert(Alert.AlertType.ERROR,
+                "Error interfacing with database:\n" + trace);
+        DialogPane dialogPane = sqlErrorAlert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("Main.css")
+                .toExternalForm());
+        Button okButton = (Button) sqlErrorAlert.getDialogPane()
+                .lookupButton(ButtonType.OK);
+        setOkButton(okButton);
+        sqlErrorAlert.showAndWait();
+    }
+
+    private void setOkButton(Button okButton) {
+        Image okImage = new Image("/studenttracker/Icons/OKButton.png", 55, 33,
+                true, true);
+        okButton.setGraphic(new ImageView(okImage));
+        okButton.setText(null);
+        okButton.setId("ok-button");
+    }
+
     private void improperFormatAlert() {
-        Alert impFormatAlert = new Alert(Alert.AlertType.WARNING,
+        Alert impFormatAlert = new Alert(Alert.AlertType.ERROR,
                 "Specified date was not formatted properly."
                 + " Please use \"mm-dd-yyyy\" format.");
+        DialogPane dialogPane = impFormatAlert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("Main.css")
+                .toExternalForm());
+        dialogPane.getStyleClass().add("myDialog");
+        Button okButton = (Button) impFormatAlert.getDialogPane().lookupButton(ButtonType.OK);
+        setOkButton(okButton);
         impFormatAlert.showAndWait();
     }
 
     private Label createStatusText(StringProperty inputTxt) {
         //Creates and binds TextProperties for GUI status messages.
         Label statusText = new Label();
+        statusText.setTextOverrun(LEADING_ELLIPSIS);
         statusText.setId("statusText");
         statusText.textProperty().bind(inputTxt);
         return statusText;
     }
 
-    private void initAddStudentStage(String stdntLstPath, Properties properties, ListView<String> visibleStudentList, List<String> studentList, TextField studentField, StringProperty stdntLstTxt, Stage primaryStage) {
+    private void initAddStudentStage(ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, TextField studentField,
+            StringProperty listStatusTextProperty,
+            Properties localProperties, Stage primaryStage) {
         Stage addStudentStage = new Stage();
-        Text addText = new Text("Type the name of the student you would like to add and press OK");
+        addStudentStage.setTitle("Add Student");
+        addStudentStage.initOwner(primaryStage);
+        addStudentStage.initModality(Modality.APPLICATION_MODAL);
+        Label addText = new Label("Type the name of the student you would like "
+                + "to add and press OK");
         TextField addField = new TextField();
-        Button okButton = new Button("OK");
-        Button cancelButton = new Button("Cancel");
+        Button okButton = new Button();
+        setOkButton(okButton);
+        okButton.setOnAction((ActionEvent event) -> {
+            String fieldName = addField.getText();
+            if (fieldName != null && !fieldName.equals("")) {
+                String[] fileName = new File(
+                        localProperties.getProperty("listPath")).getName().split(" ");
+                if (!fileName[0].equals("Modified")) {
+                    localProperties.setProperty("listPath", resourcePath + File.separator
+                            + "Modified " + new File(
+                                    localProperties.getProperty("listPath")).getName());
+                    storeLocalProperties(localProperties);
+                    setListStatusTextProperty(localProperties.getProperty("listPath"),
+                            listStatusTextProperty);
+                }
+                addStudentToList(studentList, fieldName,
+                        localProperties.getProperty("listPath"));
+                setFilteredList(visibleStudentList, observableStudentList,
+                        studentField);
+                addStudentStage.close();
+            }
+        });
+        Button cancelButton = new Button();
+        Image cancelImage = new Image(
+                "/studenttracker/Icons/CancelButton.png", 55, 33, true,
+                true);
+        cancelButton.setGraphic(new ImageView(cancelImage));
+        cancelButton.setId("cancelButton");
         cancelButton.setOnAction((ActionEvent event) -> {
             addStudentStage.close();
         });
-        okButton.setOnAction((ActionEvent event) -> {
-            System.out.println("Taking action ?" + (addField.getText() != null && !addField.getText().equals("")));
-            if (addField.getText() != null && !addField.getText().equals("")) {
-                System.out.println("We're taking action!");
-                String[] name = addField.getText().split(" ");
-                if (name.length == 3) {
-                    name[1] += " " + name[2];
-                }
-                String[] formattedName = {name[1], name[0]};
-                String[] fileName = new File(stdntLstPath).getName().split(" ");
-                System.out.println("We split the filename to find out if a modified list exists.");
-                System.out.println("File name is " + fileName);
-                if (fileName[0].equals("Modified")) {
-                    System.out.println("Modified key word recognized.");
-                    modifyStudentList(formattedName, stdntLstPath, "add");
-                    System.out.println("Trying to reset visible list.");
-                    resetVisibleList(properties, stdntLstPath, visibleStudentList, studentList,studentField, primaryStage, stdntLstTxt);
-                } else {
-                    System.out.println("Modified variable not found, adding.");
-                    String modListPath = resourcePath + File.separator + "Modified " + new File(stdntLstPath).getName();
-                    modifyStudentList(formattedName, modListPath, "add");
-                    System.out.println("Trying to reset visible list.");
-                    resetVisibleList(properties, modListPath, visibleStudentList, studentList, studentField, primaryStage, stdntLstTxt);
-                }
-            }
-        });
-        HBox buttons = new HBox();
-        buttons.getChildren().addAll(okButton, cancelButton);
-        VBox layout = new VBox();
-        layout.getChildren().addAll(addText, addField, buttons);
-        Scene scene = new Scene(layout);
-        addStudentStage.setScene(scene);
+
+        Scene addScene = new Scene(addStudentStageLayout(addText, addField,
+                okButton, cancelButton));
+        addScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
+        addStudentStage.setScene(addScene);
         addStudentStage.show();
     }
 
-    private void modifyStudentList(String[] name, String listPath, String op) {
+    private void initAddSchoolStage(ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, StringProperty listStatusTextProperty,
+            Properties globalProperties, Properties localProperties,
+            Stage primaryStage, Menu changeSchool, Menu removeSchool,
+            Menu assignDatabase, Label listStatusText, TextField studentField) {
+        Stage addSchoolStage = new Stage();
+        addSchoolStage.setTitle("Add School");
+        addSchoolStage.initOwner(primaryStage);
+        addSchoolStage.initModality(Modality.APPLICATION_MODAL);
+        Label addText = new Label("Type the name of the school you would like "
+                + "to add and press OK");
+        TextField addField = new TextField();
+        Button okButton = new Button();
+        setOkButton(okButton);
+        okButton.setOnAction((ActionEvent event) -> {
+            String fieldName = addField.getText();
+            if (fieldName != null && !fieldName.equals("")) {
+                System.out.println("schools property:" + globalProperties.getProperty("schools"));
+                if (globalProperties.getProperty("schools").equals("")) {
+                    globalProperties.setProperty("schools", fieldName);
+                } else {
+                    globalProperties.setProperty("schools",
+                            globalProperties.getProperty("schools") + ";"
+                            + fieldName);
+                }
+                storeGlobalProperties(globalProperties);
+                schoolPath = resourcePath + File.separator
+                        + fieldName;
+                new File(schoolPath).mkdir();
+                new File(schoolPath + File.separator + "students").mkdir();
+                checkDatabase();
+                Properties newLocalProperties = new Properties();
+                establishLocalProperties(newLocalProperties);
+                updateMenus(visibleStudentList, observableStudentList,
+                        studentList, listStatusTextProperty, globalProperties,
+                        localProperties, primaryStage, changeSchool, removeSchool,
+                        assignDatabase, listStatusText, studentField);
+                addSchoolStage.close();
+            }
+        });
+        Button cancelButton = new Button();
+        Image cancelImage = new Image(
+                "/studenttracker/Icons/CancelButton.png", 55, 33, true,
+                true);
+        cancelButton.setGraphic(new ImageView(cancelImage));
+        cancelButton.setId("cancelButton");
+        cancelButton.setOnAction((ActionEvent event) -> {
+            addSchoolStage.close();
+        });
 
-        List<String> writeList = new ArrayList<>();
-        if (op.equals("add")) {
-            backgroundList.add(name);
-        }
-        for (int i = 0; i < backgroundList.size(); i++) {
-            writeList.add(backgroundList.get(i)[0] + " \t" + backgroundList.get(i)[1]);
-        }
-        if (op.equals("rem")) {
+        Scene addScene = new Scene(addStudentStageLayout(addText, addField,
+                okButton, cancelButton));
+        addScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
+        addSchoolStage.setScene(addScene);
+        addSchoolStage.show();
+    }
 
-            String remName = name[0].trim() + " \t" + name[1].trim();
-            Boolean check = writeList.remove(remName);
-            System.out.println("we're removing a name!" + check);
-        } else {
-            Collections.sort(writeList);
-        }
+    private VBox addStudentStageLayout(Label addText,
+            TextField addField, Button okButton, Button cancelButton) {
+        HBox buttons = new HBox();
+        buttons.setId("button-box");
+        buttons.getChildren().addAll(okButton, cancelButton);
+        VBox addBox = new VBox();
+        addBox.getChildren().addAll(addText, addField);
+        VBox stageLayout = new VBox();
+        stageLayout.setId("layout");
+        stageLayout.getChildren().addAll(addBox, buttons);
+        return stageLayout;
+    }
 
+    private String[] formatName(String name) throws DataFormatException {
+        String[] splitName = name.split(" ");
+        if (splitName.length < 2) {
+            throw new DataFormatException();
+        }
+        String[] formattedName = {splitName[1], splitName[0]};
+        if (splitName.length > 2) {
+            for (int i = 2; i < splitName.length; i++) {
+                formattedName[1] += " " + splitName[i];
+            }
+        }
+        return formattedName;
+    }
+
+    private void addStudentToList(List<String> studentList, String name,
+            String listPath) {
         try {
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(listPath)));
+            String[] formattedName = formatName(name);
+            Boolean check = backgroundList.add(formattedName);
+            writeStudentList(listPath);
+            readStudentList(studentList, listPath);
+        } catch (DataFormatException df) {
+
+        }
+    }
+
+    private void removeStudentFromList(List<String> studentList, String name,
+            String listPath) {
+        try {
+            String[] formattedName = formatName(name);
+            for (ListIterator<String[]> iter = backgroundList.listIterator();
+                    iter.hasNext();) {
+                String[] entry = iter.next();
+                if (entry[0].equals(formattedName[0]) && entry[1].equals(formattedName[1])) {
+                    iter.remove();
+                }
+            }
+            studentList.remove(name);
+            removeFromStudentTable(name.trim());
+            writeStudentList(listPath);
+        } catch (DataFormatException df) {
+
+        }
+    }
+
+    private void writeStudentList(String listPath) {
+        List<String> writeList = new ArrayList<>();
+        for (int i = 0; i < backgroundList.size(); i++) {
+            writeList.add(backgroundList.get(i)[0] + " \t"
+                    + backgroundList.get(i)[1]);
+        }
+        Collections.sort(writeList);
+        try {
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(listPath)));
             writer.write("Last Name \tFirst Name");
             for (int i = 0; i < writeList.size(); i++) {
                 writer.newLine();
@@ -1040,10 +1572,9 @@ public class StudentTracker extends Application {
         }
     }
 
-    private void extractStudentList(List<String> studentList,
+    private void readStudentList(List<String> studentList,
             String stdntLstPath) {
-        //extracts student list from text file.
-
+        //readss student list from text file.
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     new FileInputStream(stdntLstPath)));
@@ -1058,181 +1589,191 @@ public class StudentTracker extends Application {
                 }
             }
             String str;
-            int lines = 0;
+            studentList.clear();
+            backgroundList.clear();
             while ((str = reader.readLine()) != null) {
                 String[] array = str.split("\\t");
-                String[] backgroundName = {array[lastNameInd].trim(), array[firstNameInd].trim()};
+                String[] backgroundName = {array[lastNameInd].trim(),
+                    array[firstNameInd].trim()};
                 backgroundList.add(backgroundName);
                 studentList.add(array[firstNameInd].trim() + " "
                         + array[lastNameInd].trim());
             }
             reader.close();
         } catch (IOException io) {
-            System.err.println("I/O Exception in method extractStudentList: "
+            System.err.println("I/O Exception in method readStudentList: "
                     + io);
-            Alert studentListNotFound = new Alert(Alert.AlertType.WARNING,
+            Alert studentListNotFound = new Alert(Alert.AlertType.ERROR,
                     "Specified student list was not found. "
                     + "Please choose a different list.");
+            DialogPane dialogPane = studentListNotFound.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("Main.css")
+                    .toExternalForm());
             studentListNotFound.showAndWait();
         } catch (NullPointerException npe) {
-            Alert templateNotFound = new Alert(Alert.AlertType.WARNING,
+            Alert studentListNotFound = new Alert(Alert.AlertType.ERROR,
                     "Specified student list was not found. "
                     + "Please choose a different list.");
-            templateNotFound.showAndWait();
+            DialogPane dialogPane = studentListNotFound.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("Main.css")
+                    .toExternalForm());
+            studentListNotFound.showAndWait();
         }
     }
 
-    private void establishProperties(Properties properties) {
-        //Retrieves properties or creates properties file if none exists.
-
-        //define properties file path.
-        Path propPath = Paths.get(resourcePath + File.separator
-                + "data.properties");
-        //If file does not exist, create it.
-        if (Files.notExists(propPath)) {
+    private void establishGlobalProperties(Properties globalProperties) {
+        File globalPropFile = new File(resourcePath + File.separator + "global.properties");
+        if (globalPropFile.exists()) {
             try {
-                Files.createFile(propPath);
+                globalProperties.load(
+                        new FileInputStream(globalPropFile.toString()));
             } catch (IOException io) {
-                System.err.println("Could not create properties file: " + io);
-            }
-            //Set property values to pass to created file.
-            String studentListPath = "";
-            properties.setProperty("studentListPath", studentListPath);
-            //Write properties to created properties file.
-            try (FileOutputStream writeProp = new FileOutputStream(
-                    resourcePath + File.separator + "data.properties")) {
-                properties.store(writeProp, null);
-            } catch (IOException io) {
-                System.err.println("Could not write properties to file: " + io);
+                System.err.println("Unable to load global properties file");
             }
         } else {
-            //Load properties from existing properties file.
-            try {
-                properties.load(new FileInputStream(propPath.toString()));
-            } catch (IOException io) {
-                System.err.println("Could not load properties: " + io);
+            String schools = "";
+            globalProperties.setProperty("schools", schools);
+            String selectedSchool = "Default";
+            globalProperties.setProperty("selectedSchool", selectedSchool);
+            //Write properties to created properties file.
+            storeGlobalProperties(globalProperties);
+        }
+
+    }
+
+    private void deleteDirectory(Path directory) throws IOException {
+        Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file,
+                    BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
             }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc)
+                    throws IOException {
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    private void establishLocalProperties(Properties localProperties) {
+        //Retrieves properties or creates properties file if none exists.
+
+        File localPropFile = new File(schoolPath + File.separator
+                + "local.properties");
+        if (localPropFile.exists()) {
+            try {
+                localProperties.load(
+                        new FileInputStream(localPropFile.toString()));
+            } catch (IOException io) {
+                System.err.println("Unable to load local properties file");
+            }
+        } else {
+            String listPath = "";
+            localProperties.setProperty("listPath", listPath);
+            storeLocalProperties(localProperties);
         }
     }
 
-    private void copy(File source, File target) throws IllegalArgumentException {
-        System.out.println("Source file: " + source.getName());
-        System.out.println("Target file: " + target.getName());
-        System.out.println("Source and target files are the same? " + source.getName().equals(target.getName()));
-        if (!source.getName().equals(target.getName())) {
+    private void storeGlobalProperties(Properties globalProperties) {
+        try (FileOutputStream writeProp = new FileOutputStream(
+                resourcePath + File.separator + "global.properties")) {
+            globalProperties.store(writeProp, null);
+        } catch (IOException io) {
+            System.err.println("Could not write properties to file: " + io);
+        }
+    }
+
+    private void storeLocalProperties(Properties localProperties) {
+        try (FileOutputStream writeProp = new FileOutputStream(
+                schoolPath + File.separator + "local.properties")) {
+            localProperties.store(writeProp, null);
+        } catch (IOException io) {
+            System.err.println("Could not write properties to file: " + io);
+        }
+    }
+
+    private void copy(File source, File target)
+            throws IllegalArgumentException {
+        /* copy 
+        
+         */
+        if (!source.toString().equals(target.toString())) {
             try {
                 if (target.exists()) {
-                    Alert fileExistsAlert = new Alert(
-                            Alert.AlertType.CONFIRMATION, "File already exists. Overwrite?");
-                    fileExistsAlert.showAndWait().ifPresent(response -> {
-
-                        if (response != ButtonType.OK) {
-                            throw new IllegalArgumentException();
-                        }
-                    });
+                    fileExistsAlert();
                 }
-                FileChannel sourceChannel = new FileInputStream(source).getChannel();
-                FileChannel targetChannel = new FileOutputStream(target).getChannel();
-                targetChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+                FileChannel sourceChannel = new FileInputStream(source)
+                        .getChannel();
+                FileChannel targetChannel = new FileOutputStream(target)
+                        .getChannel();
+                targetChannel.transferFrom(sourceChannel, 0, sourceChannel
+                        .size());
                 targetChannel.close();
                 sourceChannel.close();
             } catch (IOException io) {
-                System.err.println("Method copy unable to generate file channels!");
+                System.err.println("Method copy unable to generate file "
+                        + "channels!");
             }
         }
     }
 
-    private VBox createLayout(List<String> studentList, Properties properties,
-            Stage primaryStage) {
+    private VBox primaryStageLayout(Label listStatusText, Label listLabel,
+            TextField studentField, ListView<String> visibleStudentList,
+            Button setDirBtn, Label studentListText, Button addStudentButton, Button removeStudentButton,
+            MenuBar menuBar, Stage primaryStage) {
         //Creates GUI elements and layout.
-
-        //Create elements for studentList status text.
-        String stdntLstPath = properties.getProperty("studentListPath");
-        StringProperty stdntLstTxt = new SimpleStringProperty();
-        Label listStatusText = createStatusText(stdntLstTxt);
-        if (stdntLstPath.isEmpty()) {
-            stdntLstTxt.set("No student list has been selected");
-            listStatusText.setTextFill(rgb(255, 0, 0));
-        } else {
-            stdntLstTxt.set("Selected Student List:\n" + stdntLstPath);
-            extractStudentList(studentList, stdntLstPath);
-        }
-        TextField studentField = new TextField();
-        //Create elements for left half of GUI.
-        Label stdntLbl = new Label("Student Name:");
-        ListView<String> visibleStudentList = createVisibleStudentList(studentList,
-            studentField, primaryStage, stdntLstPath, stdntLstTxt);
-        Button setDirBtn = createDirectoryButton(properties, primaryStage, visibleStudentList, studentList, studentField, stdntLstTxt);
-        //Place elements in multiple VBoxes for positioning purposes.
         VBox studentName = new VBox();
-        studentName.getChildren().add(stdntLbl);
-        studentName.getChildren().add(studentField);
-        VBox directoryInfo = new VBox();
-        directoryInfo.setId("studentInfo");
-        directoryInfo.getChildren().add(studentName);
-        directoryInfo.getChildren().add(setDirBtn);
-        directoryInfo.getChildren().add(listStatusText);
-        listStatusText.setTextOverrun(LEADING_ELLIPSIS);
-        VBox userInput = new VBox();
-        userInput.setId("userInput");
-        userInput.getChildren().add(directoryInfo);
-        VBox visibleStudents = new VBox();
-        //Create elements for right half of GUI.
-        Label studentListLbl = new Label("Student List:");
-        Button addStudentButton = new Button("Add");
-        addStudentButton.setOnAction((ActionEvent event) -> {
-            initAddStudentStage(stdntLstPath, properties, visibleStudentList, studentList, studentField, stdntLstTxt, primaryStage);
-        });
-        Button removeStudentButton = initRemoveStudentButton(properties, visibleStudentList, stdntLstPath, studentList, studentField, primaryStage, stdntLstTxt);
+        studentName.getChildren().addAll(studentListText, studentField);
+        studentName.setAlignment(Pos.CENTER_LEFT);
+        VBox listBox = new VBox();
+        listBox.getChildren().addAll(listLabel, visibleStudentList);
+        //Create elements for studentList status text.
         HBox buttons = new HBox();
+        buttons.setId("button-box");
         buttons.getChildren().addAll(addStudentButton, removeStudentButton);
-        visibleStudents.getChildren().add(studentListLbl);
-        visibleStudents.getChildren().add(visibleStudentList);
-        visibleStudents.getChildren().add(buttons);
-        //Combine left and right halves of GUI in HBox.
-        HBox content = new HBox();
-        content.setId("content");
-        content.getChildren().add(userInput);
-        content.getChildren().add(visibleStudents);
-        //Create MenuBar for access to readme file.
-        MenuBar menuBar = new MenuBar();
-        //Create File menu item.
-        Menu menuFile = new Menu("File");
-        //Create readme menu item under file.
-        MenuItem readMeMenu = createReadMeMenuItem(primaryStage);
-        menuFile.getItems().add(readMeMenu);
-        //Create close menu item under readme
-        MenuItem closeMenu = createCloseMenuItem();
-        menuFile.getItems().add(closeMenu);
-        //Add File menu to menuBar.
-        menuBar.getMenus().add(menuFile);
+        GridPane studentPane = new GridPane();
+        studentPane.setId("grid-pane");
+        studentPane.add(studentName, 0, 0);
+        studentPane.add(listBox, 1, 0);
+        studentPane.add(setDirBtn, 0, 1);
+        setDirBtn.setAlignment(Pos.CENTER);
+        studentPane.add(buttons, 1, 1);
         VBox layout = new VBox();
-        layout.getChildren().add(menuBar);
-        layout.getChildren().add(content);
-
-        return layout;
+        layout.getChildren().addAll(menuBar, studentPane, listStatusText);
+        layout.setId("layout");
+        VBox windowContent = new VBox();
+        windowContent.getChildren().addAll(menuBar, layout);
+        return windowContent;
     }
-    
-    private Button initRemoveStudentButton(Properties properties, ListView<String> visibleStudentList, String stdntLstPath, List<String> studentList, TextField stdntFld, Stage primaryStage, StringProperty stdntLstTxt) {
-        Button removeStudentButton = new Button("Remove");
-        removeStudentButton.setOnAction((ActionEvent event) -> {
-            String drop = visibleStudentList.getSelectionModel().getSelectedItem();
-            if (drop != null) {
-                String[] name = drop.split(" ");
-                if (name.length == 3) {
-                    name[1] += " " + name[2];
-                }
-                String[] formattedName = {name[1], name[0]};
-                String[] fileName = new File(stdntLstPath).getName().split(" ");
 
-                if (fileName[0].equals("Modified")) {
-                    modifyStudentList(formattedName, stdntLstPath, "rem");
-                    resetVisibleList(properties, stdntLstPath, visibleStudentList, studentList, stdntFld, primaryStage, stdntLstTxt);
-                } else {
-                    String modListPath = resourcePath + File.separator + "Modified " + new File(stdntLstPath).getName();
-                    modifyStudentList(formattedName, modListPath, "rem");
-                    resetVisibleList(properties, modListPath, visibleStudentList, studentList, stdntFld, primaryStage, stdntLstTxt);
+    private Button initRemoveStudentButton(Properties properties,
+            ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, TextField studentField) {
+        Button removeStudentButton = new Button();
+        removeStudentButton.setOnAction((ActionEvent event) -> {
+            String drop
+                    = visibleStudentList.getSelectionModel().getSelectedItem();
+            if (drop != null) {
+                String[] fileName = new File(properties.getProperty("listPath"))
+                        .getName().split(" ");
+
+                if (!fileName[0].equals("Modified")) {
+                    properties.setProperty("listPath", resourcePath
+                            + File.separator + "Modified " + new File(
+                                    properties.getProperty("listPath"))
+                            .getName());
+                    storeLocalProperties(properties);
+
                 }
+                removeStudentFromList(studentList, drop,
+                        properties.getProperty("listPath"));
+                setFilteredList(visibleStudentList, observableStudentList,
+                        studentField);
             }
         });
         return removeStudentButton;
@@ -1281,48 +1822,44 @@ public class StudentTracker extends Application {
         return closeMenu;
     }
 
-    private Button createDirectoryButton(Properties properties,
-            Stage primaryStage, ListView<String> visibleStudentList, List<String> studentList, TextField stdntFld, StringProperty stdntLstTxt) {
+    private Button initDirectoryButton(ListView<String> visibleStudentList,
+            ObservableList<String> observableStudentList,
+            List<String> studentList, TextField studentField,
+            Properties localProperties, StringProperty listStatusTextProperty,
+            Stage primaryStage) {
         //Create button to choose student list directory.
 
         //Create button.
-        Button dirBtn = new Button("Set Student List");
+        Button dirBtn = new Button();
+        Image imageDir = new Image("/studenttracker/Icons/SetListButton.png",
+                110, 66, true, true);
+        dirBtn.setGraphic(new ImageView(imageDir));
         dirBtn.setId("dirBtn");
         //Prompt user to choose student list file.
         FileChooser chooseList = new FileChooser();
         chooseList.setInitialDirectory(new File(resourcePath));
         chooseList.setTitle("Select Student List File");
-        dirBtn.setOnAction((final ActionEvent dirClick) -> {
+        dirBtn.setOnAction((final ActionEvent event) -> {
             File listFile = chooseList.showOpenDialog(primaryStage);
             //Perform actions only if a new list is chosen.
             if (listFile != null) {
                 //Modify properties file to reflect change in path of student list file.
-                File target = new File(resourcePath + File.separator + listFile.getName());
-                copy(listFile, target);
-                resetVisibleList(properties, resourcePath + File.separator + listFile.getName(), visibleStudentList, studentList, stdntFld, primaryStage, stdntLstTxt);
+                File target = new File(resourcePath + File.separator
+                        + listFile.getName());
+                try {
+                    copy(listFile, target);
+                } catch (IllegalArgumentException ia) {
+                }
+                localProperties.setProperty("listPath", target.toString());
+                storeLocalProperties(localProperties);
+                readStudentList(studentList, localProperties.getProperty("listPath"));
+                setFilteredList(visibleStudentList, observableStudentList,
+                        studentField);
+                setListStatusTextProperty(localProperties.getProperty("listPath"), listStatusTextProperty);
 
             }
         });
         return dirBtn;
-    }
-
-    private void resetVisibleList(Properties properties, String listFile, ListView<String> visibleStudentList, List<String> studentList, TextField stdntFld, Stage primaryStage, StringProperty stdntLstTxt) {
-        properties.setProperty("studentListPath", listFile);
-        try {
-            FileOutputStream saveProp = new FileOutputStream(resourcePath
-                    + File.separator + "data.properties");
-            try {
-                properties.store(saveProp, null);
-            } catch (IOException io) {
-                System.err.println("Could not update properties: " + io);
-            }
-            visibleStudentList = createVisibleStudentList(studentList,
-                stdntFld, primaryStage, listFile, stdntLstTxt);
-            
-        } catch (FileNotFoundException fnf) {
-            System.err.println("Could not find save to properties file: "
-                    + fnf);
-        }
     }
 
     private void getText(StringBuilder readMeLines, BufferedReader br)

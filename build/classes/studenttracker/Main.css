@@ -1,0 +1,189 @@
+/* 
+ * Copyright 2016 Andrew Burch.
+ *
+ * This software is not available for distribution under any license.
+ *
+ *   Created on : Dec 15, 2016, 9:30:38 AM
+ *   Author     : Andrew Burch
+ */
+.root {
+    -fx-font-size: 12pt;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Arial";
+    -fx-background-color: linear-gradient(to right, #273235, #4c5a5e);
+}
+.menu-button {
+    -fx-padding: 0px;
+    -fx-background-color: transparent;
+}
+.menu-item .label {
+    -fx-text-fill: black;
+}
+.context-menu {
+    -fx-padding: 0;
+}
+.menu-item .text {
+    -fx-font-size: 10pt;
+
+}
+
+.menu-button {
+    -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 20%);
+    -fx-background-radius: 2;
+    -fx-background-insets: 2;
+    -fx-effect: dropshadow(three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-border-color: #bdbdbd;
+    -fx-border-width: 0 1 0 0;
+    -fx-padding: 0 10 0 10;
+    -fx-border-radius: 0;
+
+}
+.menu-button:pressed {
+    -fx-translate-x: 1;
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+.menu-bar {
+    -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 40%);
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 0;
+    -fx-border-insets: 0;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0;
+}
+.text-field {
+    -fx-max-width: 200px;
+    -fx-vgap: 15px;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+.check-box {
+    -fx-font-size: 12pt;
+    -fx-font-family: "Arial";
+    -fx-text-fill: #ffffff;
+}
+.check-box *.box {
+    -fx-background-insets: 0;
+    -fx-background-radius: 10;
+    -fx-background-color: transparent;
+    -fx-border-radius: 10;
+    -fx-padding: 10 10 10 10;
+}
+.check-box *.box *.mark {
+    -fx-background-image: url("../studenttracker/Icons/CheckBoxUncheckedScaled.png");
+    -fx-background-position: center;
+    -fx-padding: 10 20 10 20;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    /*    -fx-background-repeat: stretch;*/
+    -fx-shape: null;
+}
+.check-box:selected *.box *.mark {
+    -fx-background-color: transparent;
+    -fx-background-image: url("../studenttracker/Icons/CheckBoxCheckedScaled.png");
+}
+.check-box:indeterminate *.box *.mark {
+    -fx-background-color: transparent;
+    -fx-background-image: url("../studenttracker/Icons/CheckBoxIndeterminateScaled.png");
+}
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+.scroll-bar *.track{
+    -fx-background-color: transparent;
+}
+.scroll-bar *.thumb {
+    -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 20%);
+    -fx-background-radius: 2;
+    -fx-background-insets: 2;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 4;
+    -fx-border-insets: 0 0 0 2;
+}
+.scroll-bar *.thumb:pressed {
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+.list-view {
+    -fx-pref-width: 250px;
+    -fx-hgap: 20px;
+    -fx-vgap: 20px;
+    -fx-background-color: transparent;
+}
+.list-view *.decrement-button,
+.list-view *.increment-button {
+    -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 20%);
+    -fx-background-radius: 2;
+    -fx-background-insets: 2;
+
+    -fx-border-color: #bdbdbd;
+    -fx-border-radius: 4;
+    -fx-border-insets: 0 0 0 2;
+    -fx-padding: 6 4 6 4;
+}
+.list-view *.decrement-button:pressed,
+.list-view *.increment-button:pressed {
+    -fx-translate-x: 1;
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+#grid-pane {
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+}
+#statusText {
+    -fx-pref-width: 400px;
+}
+#layout {
+    -fx-spacing: 15px;
+    -fx-padding: 10px;
+}
+.button {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+}
+.button:pressed {
+    -fx-translate-x: 1;
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+#modDate {
+    -fx-text-alignment: center;
+    -fx-padding: 0 0 0 160;
+    -fx-alignment: center;
+    -fx-text-fill: #bdbdbd;
+}
+#listButtons {
+    -fx-spacing: 20px;
+    -fx-alignment: center-left;
+}
+#button-box {
+    -fx-spacing: 20px;
+    -fx-padding: 10px;
+}
+.label {
+    -fx-font: 12pt "Arial";
+    -fx-text-fill: #ffffff;
+
+}
+.text {
+    -fx-font: 12pt "Arial";
+}
+#rightSide {
+    -fx-spacing: 20px;
+}
+.dialog-pane {
+/*    -fx-background-color: blue;*/
+}
+.dialog-pane *.header-panel *.label {
+    /*    -fx-background-color: -fx-box-border, linear-gradient(-fx-background, derive(-fx-background, 30%));*/
+    -fx-background-color: transparent;
+    -fx-background-insets: 0, 0 0 1 0;
+}
+.dialog-pane *.header-panel {
+    -fx-background-color: transparent;
+}

@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright 2016 Andrew Burch.
+ *
+ * This software is not available for distribution under any license.
  */
 package studenttracker;
 
