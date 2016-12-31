@@ -81,13 +81,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import static javafx.scene.paint.Color.rgb;
-import static javafx.scene.paint.Color.rgb;
-import static javafx.scene.paint.Color.rgb;
-import static javafx.scene.paint.Color.rgb;
-import static javafx.scene.paint.Color.rgb;
-import static javafx.scene.paint.Color.rgb;
-import static javafx.scene.paint.Color.rgb;
-import static javafx.scene.paint.Color.rgb;
 
 /**
  *
@@ -119,6 +112,7 @@ public class StudentTracker extends Application {
         //Obtain properties from properties file or create a properties file if none exists.
         Properties globalProperties = new Properties();
         establishGlobalProperties(globalProperties);
+
         schoolPath = resourcePath + File.separator + globalProperties.getProperty("selectedSchool");
         new File(schoolPath).mkdir();
         studentFilesPath = schoolPath + File.separator + "Student Files";
@@ -141,16 +135,14 @@ public class StudentTracker extends Application {
         StringProperty listStatusTextProperty = new SimpleStringProperty();
         Label listStatusText = createStatusText(listStatusTextProperty);
         setListStatusTextProperty(listPath, listStatusTextProperty);
-        if (listPath.isEmpty()) {
-            listStatusText.setTextFill(rgb(255, 0, 0));
-        }
         Label listLabel = new Label("Student Name:");
         TextField studentField = new TextField();
         ListView<String> visibleStudentList = createVisibleStudentList(
                 observableStudentList, studentField, primaryStage);
         Button setDirBtn = initDirectoryButton(visibleStudentList,
-                observableStudentList, studentList, studentField, localProperties,
-                listStatusTextProperty, primaryStage);
+                observableStudentList, studentList, studentField,
+                listStatusText, localProperties, listStatusTextProperty,
+                primaryStage);
         Label studentListText = new Label("Student List:");
         Button addStudentButton = new Button();
         Image addStudentImage = new Image(
@@ -184,6 +176,10 @@ public class StudentTracker extends Application {
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
+        if (listPath.isEmpty()) {
+            System.out.println("Setting text fill to red!");
+            listStatusText.setTextFill(rgb(255, 0, 0));
+        }
     }
 
     public static void main(String[] args) {
@@ -199,46 +195,25 @@ public class StudentTracker extends Application {
         //Create File menu item.
         Menu fileMenu = new Menu("File");
         Menu changeSchool = new Menu("Change School");
-        Menu assignDatabase = assignDatabaseMenuItem();
-        Menu removeSchool = removeSchoolMenuItem(visibleStudentList,
-                observableStudentList, studentList, listStatusTextProperty,
-                globalProperties, localProperties, primaryStage, changeSchool,
-                assignDatabase, listStatusText, studentField);
-
-        MenuItem addSchool = addSchoolMenuItem(visibleStudentList,
-                observableStudentList, studentList, listStatusTextProperty,
-                globalProperties, localProperties, primaryStage, changeSchool,
-                removeSchool, assignDatabase, listStatusText, studentField);
-
-        //Create readme menu item under file.
-        MenuItem readMeMenu = createReadMeMenuItem(primaryStage);
-        //Create close menu item under readme
-        MenuItem closeItem = createCloseMenuItem();
-        fileMenu.getItems().addAll(changeSchool, addSchool,
-                removeSchool, assignDatabase, readMeMenu, closeItem);
-        //Add File menu to menuBar.
-        menuBar.getMenus().add(fileMenu);
-        return menuBar;
-    }
-
-    private Menu assignDatabaseMenuItem() {
-        Menu assignDatabase = new Menu("Assign Database");
-
-        return assignDatabase;
-    }
-
-    private Menu removeSchoolMenuItem(ListView<String> visibleStudentList,
-            ObservableList<String> observableStudentList,
-            List<String> studentList, StringProperty listStatusTextProperty,
-            Properties globalProperties, Properties localProperties,
-            Stage primaryStage, Menu changeSchool, Menu assignDatabase,
-            Label listStatusText, TextField studentField) {
+        Menu assignDatabase = new Menu("Assign Database to...");
         Menu removeSchool = new Menu("Remove School");
         updateMenus(visibleStudentList, observableStudentList,
                 studentList, listStatusTextProperty, globalProperties,
                 localProperties, primaryStage, changeSchool, removeSchool,
                 assignDatabase, listStatusText, studentField);
-        return removeSchool;
+        MenuItem addSchool = buildAddSchoolMenu(visibleStudentList,
+                observableStudentList, studentList, listStatusTextProperty,
+                globalProperties, localProperties, primaryStage, changeSchool,
+                removeSchool, assignDatabase, listStatusText, studentField);
+        //Create readme menu item under file.
+        MenuItem readMeMenu = buildReadMeMenuItem(primaryStage);
+        //Create close menu item under readme
+        MenuItem closeItem = buildCloseMenuItem();
+        fileMenu.getItems().addAll(changeSchool, addSchool,
+                removeSchool, assignDatabase, readMeMenu, closeItem);
+        //Add File menu to menuBar.
+        menuBar.getMenus().add(fileMenu);
+        return menuBar;
     }
 
     private void updateMenus(ListView<String> visibleStudentList,
@@ -263,21 +238,26 @@ public class StudentTracker extends Application {
                         globalProperties.setProperty("selectedSchool", school);
                         schoolPath = resourcePath + File.separator + school;
                         studentFilesPath = schoolPath + File.separator + "Student Files";
+                        storeGlobalProperties(globalProperties);
                         establishLocalProperties(localProperties);
                         //Check on Databasse
                         checkDatabase();
                         //Create resources folder if it does not exist.
                         if (!localProperties.getProperty("listPath").isEmpty()) {
                             readStudentList(studentList, localProperties.getProperty("listPath"));
-                        }
-
-                        //Create elements for GUI.
-                        setListStatusTextProperty(school, listStatusTextProperty);
-                        if (localProperties.getProperty("listPath").isEmpty()) {
+                            System.out.println("Setting text fill to white in updateMenus!");
+                            listStatusText.setTextFill(rgb(255, 255, 255));
+                        } else {
+                            studentList.clear();
                             listStatusText.setTextFill(rgb(255, 0, 0));
                         }
+                        setListStatusTextProperty(
+                                localProperties.getProperty("listPath"),
+                                listStatusTextProperty);
                         setFilteredList(visibleStudentList,
                                 observableStudentList, studentField);
+                    } else {
+                        System.err.println("Cannot switch to school in use");
                     }
                 });
                 changeSchool.getItems().add(changeSchoolItem);
@@ -305,12 +285,38 @@ public class StudentTracker extends Application {
                         try {
                             fileExistsAlert();
                             try {
+                                File deleteSchoolPath = new File(schoolPath);
+                                String deleteSchool = deleteSchoolPath.getName();
+                                System.out.println("deleteSchool is " + deleteSchool);
+                                String[] splitSchoolList = globalProperties.getProperty("schools").split(";");
+                                System.out.println("splitSchoolList has " + splitSchoolList.length + " entries.");
+                                List<String> schoolPropertyList = Arrays.asList(splitSchoolList);
+                                List<String> schoolList = new ArrayList<>(schoolPropertyList);
+                                schoolList.remove(deleteSchool);
+                                updateGlobalPropertiesFromList(globalProperties, schoolList);
                                 deleteDirectory(Paths.get(resourcePath
                                         + File.separator + school));
                                 Boolean check = new File(schoolPath)
                                         .renameTo(new File(resourcePath
                                                 + File.separator + school));
                                 System.out.println(check);
+                                System.out.println("Things are still happening");
+                                schoolPath = resourcePath + File.separator + school;
+                                studentFilesPath = schoolPath + File.separator + "Student Files";
+                                System.out.println("Paths are set");
+                                File listFile = new File(localProperties.getProperty("listPath"));
+                                System.out.println("made list file");
+                                if (!listFile.getName().isEmpty()) {
+                                    localProperties.setProperty("listPath",
+                                            schoolPath + File.separator
+                                            + listFile.getName());
+                                }
+                                System.out.println("localProperty changed");
+                                System.out.println("local list path set to: " + localProperties.getProperty("listPath"));
+                                storeLocalProperties(localProperties);
+                                globalProperties.setProperty("selectedSchool", school);
+                                System.out.println("set selectedSchool to " + school);
+                                System.out.println("schools are: " + globalProperties.getProperty("schools"));
                                 updateMenus(visibleStudentList, observableStudentList,
                                         studentList, listStatusTextProperty, globalProperties,
                                         localProperties, primaryStage, changeSchool, removeSchool,
@@ -350,25 +356,7 @@ public class StudentTracker extends Application {
                 Collections.sort(removeList);
                 Boolean check = removeList.remove(school);
                 System.out.println(school + " removed? " + check);
-                for (int i = 0; i < removeList.size(); i++) {
-                    System.out.println(removeList.get(i) + " remains.");
-                }
-                if (!removeList.isEmpty()) {
-                    StringBuilder schoolSB = new StringBuilder(removeList
-                            .get(0));
-                    for (int i = 1; i < removeList.size(); i++) {
-                        schoolSB.append(";");
-                        schoolSB.append(removeList.get(i));
-                    }
-                    globalProperties.setProperty("schools",
-                            schoolSB.toString());
-                    System.out.println("schools set to:" + globalProperties
-                            .getProperty("schools"));
-                } else {
-                    globalProperties.setProperty("schools", "");
-                    System.out.println("schools set to:" + globalProperties
-                            .getProperty("schools"));
-                }
+                updateGlobalPropertiesFromList(globalProperties, removeList);
                 updateMenus(visibleStudentList,
                         observableStudentList, studentList,
                         listStatusTextProperty, globalProperties,
@@ -400,6 +388,34 @@ public class StudentTracker extends Application {
         removeSchoolStage.show();
     }
 
+    private void updateGlobalPropertiesFromList(Properties globalProperties,
+            List<String> list) {
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i) + " remains.");
+        }
+        if (!list.isEmpty()) {
+            StringBuilder schoolSB = new StringBuilder(list
+                    .get(0));
+            for (int i = 1; i < list.size(); i++) {
+                schoolSB.append(";");
+                schoolSB.append(list.get(i));
+            }
+            globalProperties.setProperty("schools",
+                    schoolSB.toString());
+            System.out.println("schools set to:" + globalProperties
+                    .getProperty("schools"));
+        } else {
+            globalProperties.setProperty("schools", "");
+            System.out.println("schools set to:" + globalProperties
+                    .getProperty("schools"));
+        }
+    }
+
+    private void removeSchoolFromGlobalProps(Properties globalProperties,
+            String school) {
+
+    }
+
     private VBox removeSchoolStageLayout(Label removeText, Button okButton,
             Button cancelButton) {
         HBox buttons = new HBox();
@@ -411,7 +427,7 @@ public class StudentTracker extends Application {
         return layout;
     }
 
-    private MenuItem addSchoolMenuItem(ListView<String> visibleStudentList,
+    private MenuItem buildAddSchoolMenu(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, StringProperty listStatusTextProperty,
             Properties globalProperties, Properties localProperties,
@@ -567,7 +583,6 @@ public class StudentTracker extends Application {
                 } catch (SQLException sql) {
                     sqlErrorAlert(getTrace(sql));
                 }
-
                 conn.close();
             } catch (SQLException sql) {
                 sqlErrorAlert(getTrace(sql));
@@ -1455,14 +1470,19 @@ public class StudentTracker extends Application {
                             globalProperties.getProperty("schools") + ";"
                             + fieldName);
                 }
+                System.out.println("Selected school is " + globalProperties.getProperty("selectedSchool"));
                 storeGlobalProperties(globalProperties);
+
                 schoolPath = resourcePath + File.separator
                         + fieldName;
+                System.out.println("Selected school is " + fieldName);
                 new File(schoolPath).mkdir();
                 new File(schoolPath + File.separator + "students").mkdir();
                 checkDatabase();
                 Properties newLocalProperties = new Properties();
                 establishLocalProperties(newLocalProperties);
+                schoolPath = resourcePath + File.separator + globalProperties.getProperty("selectedSchool");
+                System.out.println("Selected school is " + globalProperties.getProperty("selectedSchool"));
                 updateMenus(visibleStudentList, observableStudentList,
                         studentList, listStatusTextProperty, globalProperties,
                         localProperties, primaryStage, changeSchool, removeSchool,
@@ -1622,15 +1642,20 @@ public class StudentTracker extends Application {
     }
 
     private void establishGlobalProperties(Properties globalProperties) {
+        System.out.println("Establishing global properties");
         File globalPropFile = new File(resourcePath + File.separator + "global.properties");
         if (globalPropFile.exists()) {
+            System.out.println("Found global properties");
             try {
                 globalProperties.load(
                         new FileInputStream(globalPropFile.toString()));
+                System.out.println("Loaded global properties:");
+
             } catch (IOException io) {
                 System.err.println("Unable to load global properties file");
             }
         } else {
+            System.out.println("Properties not found, setting defaults");
             String schools = "";
             globalProperties.setProperty("schools", schools);
             String selectedSchool = "Default";
@@ -1638,7 +1663,8 @@ public class StudentTracker extends Application {
             //Write properties to created properties file.
             storeGlobalProperties(globalProperties);
         }
-
+        System.out.println("schools: " + globalProperties.getProperty("schools"));
+        System.out.println("selected school: " + globalProperties.getProperty("selectedSchool"));
     }
 
     private void deleteDirectory(Path directory) throws IOException {
@@ -1662,16 +1688,23 @@ public class StudentTracker extends Application {
     private void establishLocalProperties(Properties localProperties) {
         //Retrieves properties or creates properties file if none exists.
 
+        System.out.println("Establishing local properties");
         File localPropFile = new File(schoolPath + File.separator
                 + "local.properties");
         if (localPropFile.exists()) {
+            System.out.println("Found local properties file.");
             try {
-                localProperties.load(
-                        new FileInputStream(localPropFile.toString()));
+                FileInputStream propFileInput = new FileInputStream(
+                        localPropFile.toString());
+                localProperties.load(propFileInput);
+                System.out.println("Loaded properties:");
+                propFileInput.close();
+                System.out.println("list path: " + localProperties.getProperty("listPath"));
             } catch (IOException io) {
                 System.err.println("Unable to load local properties file");
             }
         } else {
+            System.out.println("Could not find local properties file.");
             String listPath = "";
             localProperties.setProperty("listPath", listPath);
             storeLocalProperties(localProperties);
@@ -1688,9 +1721,11 @@ public class StudentTracker extends Application {
     }
 
     private void storeLocalProperties(Properties localProperties) {
-        try (FileOutputStream writeProp = new FileOutputStream(
-                schoolPath + File.separator + "local.properties")) {
+        try {
+            FileOutputStream writeProp = new FileOutputStream(
+                schoolPath + File.separator + "local.properties");
             localProperties.store(writeProp, null);
+            writeProp.close();
         } catch (IOException io) {
             System.err.println("Could not write properties to file: " + io);
         }
@@ -1779,7 +1814,7 @@ public class StudentTracker extends Application {
         return removeStudentButton;
     }
 
-    private MenuItem createReadMeMenuItem(Stage primaryStage) {
+    private MenuItem buildReadMeMenuItem(Stage primaryStage) {
         //Create menu item for readme.
 
         MenuItem readMeMenu = new MenuItem("ReadMe");
@@ -1791,11 +1826,12 @@ public class StudentTracker extends Application {
             readMeStage.setTitle("ReadMe");
             VBox dialogVbox = new VBox(20);
             //Read in text from readme source file.
-            BufferedReader br = new BufferedReader(new InputStreamReader(
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
                     getClass().getResourceAsStream("readme.txt")));
             StringBuilder readMeLines = new StringBuilder();
             try {
-                getText(readMeLines, br);
+                getReadMeText(readMeLines, reader);
+                reader.close();
             } catch (IOException io) {
                 System.err.println("Could not read readme file: " + io);
             }
@@ -1812,7 +1848,7 @@ public class StudentTracker extends Application {
         return readMeMenu;
     }
 
-    private MenuItem createCloseMenuItem() {
+    private MenuItem buildCloseMenuItem() {
         //Create menu item to exit application.
 
         MenuItem closeMenu = new MenuItem("Close");
@@ -1824,7 +1860,7 @@ public class StudentTracker extends Application {
 
     private Button initDirectoryButton(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
-            List<String> studentList, TextField studentField,
+            List<String> studentList, TextField studentField, Label listStatusText,
             Properties localProperties, StringProperty listStatusTextProperty,
             Stage primaryStage) {
         //Create button to choose student list directory.
@@ -1844,7 +1880,7 @@ public class StudentTracker extends Application {
             //Perform actions only if a new list is chosen.
             if (listFile != null) {
                 //Modify properties file to reflect change in path of student list file.
-                File target = new File(resourcePath + File.separator
+                File target = new File(schoolPath + File.separator
                         + listFile.getName());
                 try {
                     copy(listFile, target);
@@ -1856,13 +1892,14 @@ public class StudentTracker extends Application {
                 setFilteredList(visibleStudentList, observableStudentList,
                         studentField);
                 setListStatusTextProperty(localProperties.getProperty("listPath"), listStatusTextProperty);
-
+                System.out.println("Setting textfill to white in initDir!");
+                listStatusText.setTextFill(rgb(255, 255, 255));
             }
         });
         return dirBtn;
     }
 
-    private void getText(StringBuilder readMeLines, BufferedReader br)
+    private void getReadMeText(StringBuilder readMeLines, BufferedReader br)
             throws IOException {
         //Retrieves content from readme file.
 
@@ -1872,35 +1909,6 @@ public class StudentTracker extends Application {
         while (line != null) {
             readMeLines.append(line).append("\n");
             line = br.readLine();
-        }
-    }
-
-    private void restartApplication() {
-        //Restarts application
-
-        final String javaBin = System.getProperty("java.home")
-                + File.separator + "bin" + File.separator + "java";
-        try {
-            final File currentJar = new File(StudentTracker.class
-                    .getProtectionDomain().getCodeSource().getLocation()
-                    .toURI());
-            if (!currentJar.getName().endsWith(".jar")) {
-                return;
-            }
-            final ArrayList<String> command = new ArrayList<>();
-            command.add(javaBin);
-            command.add("-jar");
-            command.add(currentJar.getPath());
-            final ProcessBuilder builder = new ProcessBuilder(command);
-            try {
-                builder.start();
-            } catch (IOException io) {
-                System.err.println("I/O exception, program could not be "
-                        + "restarted." + io);
-            }
-            System.exit(0);
-        } catch (URISyntaxException uri) {
-            System.err.println("URI syntax exception: " + uri);
         }
     }
 }
