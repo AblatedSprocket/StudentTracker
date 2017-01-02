@@ -81,6 +81,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
 
 /**
  *
@@ -119,10 +120,7 @@ public class StudentTracker extends Application {
         new File(studentFilesPath).mkdir();
         Properties localProperties = new Properties();
         establishLocalProperties(localProperties);
-        //Check on Databasse
         checkDatabase();
-
-        //Create resources folder if it does not exist.
         List<String> studentList = new ArrayList<>();
         String listPath = localProperties.getProperty("listPath");
         if (!listPath.isEmpty()) {
@@ -130,9 +128,15 @@ public class StudentTracker extends Application {
         }
         ObservableList<String> observableStudentList
                 = FXCollections.observableList(studentList);
-
-        //Create elements for GUI.
         StringProperty listStatusTextProperty = new SimpleStringProperty();
+
+        Label schoolLabel = new Label("Active school:");
+        Label activeSchool = new Label();
+        StringProperty activeSchoolTextProperty = new SimpleStringProperty();
+        activeSchoolTextProperty.setValue(globalProperties
+                .getProperty("selectedSchool"));
+        activeSchool.textProperty().bind(activeSchoolTextProperty);
+
         Label listStatusText = createStatusText(listStatusTextProperty);
         setListStatusTextProperty(listPath, listStatusTextProperty);
         Label listLabel = new Label("Student Name:");
@@ -144,6 +148,23 @@ public class StudentTracker extends Application {
                 listStatusText, localProperties, listStatusTextProperty,
                 primaryStage);
         Label studentListText = new Label("Student List:");
+
+        Button viewIndButton = new Button("View Individuals");
+        viewIndButton.setOnMouseClicked((MouseEvent event) -> {
+            List<String> indList = collectCurrentEnrollment(Category.indStart,
+                    Category.indEnd);
+            ListView<String> indVisibleList = new ListView(FXCollections
+                    .observableList(indList));
+            initIndStage(indVisibleList, primaryStage);
+        });
+        Button viewGroupButton = new Button("View Groups");
+        viewGroupButton.setOnMouseClicked((MouseEvent event) -> {
+            List<String> groupList = collectCurrentEnrollment(Category.groupStart,
+                    Category.groupEnd);
+            ListView<String> groupVisibleList = new ListView(FXCollections
+                    .observableList(groupList));
+            initGroupStage(groupVisibleList, primaryStage);
+        });
         Button addStudentButton = new Button();
         Image addStudentImage = new Image(
                 "/studenttracker/Icons/AddStudentButton.png", 110, 66, true,
@@ -167,9 +188,10 @@ public class StudentTracker extends Application {
                 localProperties, primaryStage, listStatusText, studentField);
 
         //Create GUI.
-        Scene scene = new Scene(primaryStageLayout(listStatusText, listLabel,
-                studentField, visibleStudentList, setDirBtn, studentListText,
-                addStudentButton, removeStudentButton, menuBar, primaryStage));
+        Scene scene = new Scene(primaryStageLayout(schoolLabel, activeSchool,
+                listStatusText, listLabel, studentField, visibleStudentList,
+                setDirBtn, studentListText, viewIndButton, viewGroupButton, addStudentButton,
+                removeStudentButton, menuBar));
         scene.getStylesheets().add(StudentTracker.class.getResource(
                 "Main.css").toExternalForm());
         primaryStage.setTitle("Student Tracker");
@@ -184,6 +206,32 @@ public class StudentTracker extends Application {
 
     public static void main(String[] args) {
         Application.launch(args);
+    }
+
+    private void initIndStage(ListView<String> list, Stage primaryStage) {
+        setClickEvent(list, primaryStage);
+        Stage individualStage = new Stage();
+        individualStage.setTitle("Students in individual counseling");
+        individualStage.initOwner(primaryStage);
+        individualStage.initModality(Modality.APPLICATION_MODAL);
+        Scene indScene = new Scene(list);
+        indScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
+        individualStage.setScene(indScene);
+        individualStage.show();
+    }
+    
+    private void initGroupStage(ListView<String> list, Stage primaryStage) {
+        setClickEvent(list, primaryStage);
+        Stage individualStage = new Stage();
+        individualStage.setTitle("Students in group counseling");
+        individualStage.initOwner(primaryStage);
+        individualStage.initModality(Modality.APPLICATION_MODAL);
+        Scene indScene = new Scene(list);
+        indScene.getStylesheets().add(StudentTracker.class.getResource(
+                "Main.css").toExternalForm());
+        individualStage.setScene(indScene);
+        individualStage.show();
     }
 
     private MenuBar createMenu(ListView<String> visibleStudentList,
@@ -411,11 +459,6 @@ public class StudentTracker extends Application {
         }
     }
 
-    private void removeSchoolFromGlobalProps(Properties globalProperties,
-            String school) {
-
-    }
-
     private VBox removeSchoolStageLayout(Label removeText, Button okButton,
             Button cancelButton) {
         HBox buttons = new HBox();
@@ -484,6 +527,7 @@ public class StudentTracker extends Application {
                 } catch (SQLException sql) {
                     sqlErrorAlert(getTrace(sql));
                 } finally {
+                    stat.close();
                     conn.close();
                 }
             } catch (SQLException sql) {
@@ -580,6 +624,7 @@ public class StudentTracker extends Application {
                     conn.setAutoCommit(false);
                     update.executeBatch();
                     conn.setAutoCommit(true);
+                    update.close();
                 } catch (SQLException sql) {
                     sqlErrorAlert(getTrace(sql));
                 }
@@ -620,11 +665,93 @@ public class StudentTracker extends Application {
                 conn.setAutoCommit(false);
                 prep.executeBatch();
                 conn.setAutoCommit(true);
+                prep.close();
                 conn.close();
             } catch (SQLException sql) {
                 sqlErrorAlert(getTrace(sql));
 
             }
+        } catch (ClassNotFoundException cnf) {
+            sqlErrorAlert(getTrace(cnf));
+        }
+    }
+
+    private List<String> collectCurrentEnrollment(Category startCategory,
+            Category endCategory) {
+        List<String> list = new ArrayList<>();
+        try {
+            Class.forName("org.sqlite.JDBC");
+            try {
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+                        + schoolPath + File.separator + dbName + ".db");
+                try {
+                    Statement stat = conn.createStatement();
+                    ResultSet rs = stat.executeQuery("select " +
+                            Category.fullName + " from students where "
+                            + startCategory.toString() + " is not null and "
+                            + endCategory.toString() + " is null;");
+                    while (rs.next()) {
+                        list.add(rs.getString("fullName"));
+                    }
+                    rs.close();
+                    Collections.sort(list);
+                } catch (SQLException sql) {
+                    sqlErrorAlert(getTrace(sql));
+                }
+                conn.close();
+            } catch (SQLException sql) {
+                sqlErrorAlert(getTrace(sql));
+            }
+
+        } catch (ClassNotFoundException cnf) {
+            sqlErrorAlert(getTrace(cnf));
+        }
+        return list;
+    }
+    
+    private void transferTableEntry(String fullName, String destination, String source) {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            try {
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+                        + schoolPath + File.separator + dbName + ".db");
+                try {
+                    Statement stat = conn.createStatement();
+                    ResultSet rs = stat.executeQuery("select * from " + source
+                            + " where " + Category.fullName.toString() + " = '"
+                                    + fullName + "';");
+                    PreparedStatement prep = conn.prepareStatement("insert into "
+                            + destination + " values (?, ?, ?, ?, ?, ?, ?, ?,"
+                            + "?, ?, ?, ?, ?, ?, ?);");
+                    prep.setString(1, rs.getString(Category.fullName.toString()));
+                    prep.setString(2, rs.getString(Category.firstName.toString()));
+                    prep.setString(3, rs.getString(Category.lastName.toString()));
+                    prep.setString(4, rs.getString(Category.indStart.toString()));
+                    prep.setString(5, rs.getString(Category.indEnd.toString()));
+                    prep.setString(6, rs.getString(Category.groupStart.toString()));
+                    prep.setString(7, rs.getString(Category.groupEnd.toString()));
+                    prep.setString(8, rs.getString(Category.checkInStart.toString()));
+                    prep.setString(9, rs.getString(Category.checkInEnd.toString()));
+                    prep.setString(10, rs.getString(Category.walkIns.toString()));
+                    prep.setString(11, rs.getString(Category.forms.toString()));
+                    prep.setString(12, rs.getString(Category.notes.toString()));
+                    prep.setString(13, rs.getString(Category.hasIEP.toString()));
+                    prep.setString(14, rs.getString(Category.has504.toString()));
+                    prep.setString(15, rs.getString(Category.hasEval.toString()));
+                    prep.addBatch();
+                    conn.setAutoCommit(false);
+                    prep.executeBatch();
+                    conn.setAutoCommit(true);
+                    rs.close();
+                    prep.close();
+                } catch (SQLException sql) {
+                    sqlErrorAlert(getTrace(sql));
+                }
+                conn.close();
+            } catch (SQLException sql) {
+                sqlErrorAlert(getTrace(sql));
+            }
+
         } catch (ClassNotFoundException cnf) {
             sqlErrorAlert(getTrace(cnf));
         }
@@ -653,16 +780,23 @@ public class StudentTracker extends Application {
                     student.setIEP(Boolean.valueOf(rs.getString("hasIEP")));
                     student.set504(Boolean.valueOf(rs.getString("has504")));
                     student.setEval(Boolean.valueOf(rs.getString("hasEval")));
+                    stat.close();
                     rs.close();
                 } catch (SQLException sql) {
                     PreparedStatement prep = conn.prepareStatement("insert into"
                             + " students values (?, ?, ?, ?, ?, ?, ?, ?, ?, "
                             + "?, ?, ?, ?, ?, ?);");
+//                    "create table students (fullName, "
+//                            + "firstName, lastName, indStart, indEnd, "
+//                            + "groupStart, groupEnd, checkInStart, checkInEnd, "
+//                            + "walkIns, forms, notes, hasIEP, has504,"
+//                            + " hasEval);"
                     prep.setString(1, student.getFullName());
                     prep.setString(2, student.getFirstName());
                     prep.setString(3, student.getLastName());
                     prep.setString(4, student.getStartInd());
                     prep.setString(5, student.getEndInd());
+                    System.out.println("Writing '" + student.getEndInd() + "' to indEnd in database");
                     prep.setString(6, student.getStartGroup());
                     prep.setString(7, student.getEndGroup());
                     prep.setString(8, student.getStartCheckIn());
@@ -676,6 +810,7 @@ public class StudentTracker extends Application {
                     conn.setAutoCommit(false);
                     prep.executeBatch();
                     conn.setAutoCommit(true);
+                    prep.close();
                 }
                 conn.close();
             } catch (SQLException sql) {
@@ -718,6 +853,13 @@ public class StudentTracker extends Application {
         visibleStudentList.setEditable(false);
         setFilteredList(visibleStudentList, observableStudentList, studentField);
         //Initiate certificate creation process upon click on list item.
+        setClickEvent(visibleStudentList, primaryStage);
+
+        return visibleStudentList;
+    }
+
+    private void setClickEvent(ListView<String> visibleStudentList,
+            Stage primaryStage) {
         visibleStudentList.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() == 2 && !event.isConsumed()) {
                 String selectedStudent = visibleStudentList.getSelectionModel()
@@ -732,7 +874,6 @@ public class StudentTracker extends Application {
                 }
             }
         });
-        return visibleStudentList;
     }
 
     private void initStudentStage(Student student, Stage primaryStage) {
@@ -845,7 +986,7 @@ public class StudentTracker extends Application {
         ffBox.setOnAction((ActionEvent event) -> {
             student.toggle504();
             modifyDatabase(Category.has504, student);
-            ffBox.setSelected(student.getIEP());
+            ffBox.setSelected(student.get504());
         });
         CheckBox evalBox = new CheckBox("Eval in process");
         if (student.getEval()) {
@@ -1723,7 +1864,7 @@ public class StudentTracker extends Application {
     private void storeLocalProperties(Properties localProperties) {
         try {
             FileOutputStream writeProp = new FileOutputStream(
-                schoolPath + File.separator + "local.properties");
+                    schoolPath + File.separator + "local.properties");
             localProperties.store(writeProp, null);
             writeProp.close();
         } catch (IOException io) {
@@ -1756,27 +1897,38 @@ public class StudentTracker extends Application {
         }
     }
 
-    private VBox primaryStageLayout(Label listStatusText, Label listLabel,
-            TextField studentField, ListView<String> visibleStudentList,
-            Button setDirBtn, Label studentListText, Button addStudentButton, Button removeStudentButton,
-            MenuBar menuBar, Stage primaryStage) {
+    private VBox primaryStageLayout(Label schoolLabel, Label activeSchool,
+            Label listStatusText, Label listLabel, TextField studentField,
+            ListView<String> visibleStudentList, Button setDirBtn,
+            Label studentListText, Button viewIndButton, Button viewGroupButton,
+            Button addStudentButton,
+            Button removeStudentButton, MenuBar menuBar) {
         //Creates GUI elements and layout.
         VBox studentName = new VBox();
         studentName.getChildren().addAll(studentListText, studentField);
         studentName.setAlignment(Pos.CENTER_LEFT);
+        VBox school = new VBox();
+        activeSchool.setId("activeSchool-label");
+        school.getChildren().addAll(schoolLabel, activeSchool);
+        VBox schoolAndStudent = new VBox();
+        schoolAndStudent.getChildren().addAll(school, studentName);
+        schoolAndStudent.setId("schoolAndStudent-vbox");
         VBox listBox = new VBox();
         listBox.getChildren().addAll(listLabel, visibleStudentList);
         //Create elements for studentList status text.
-        HBox buttons = new HBox();
-        buttons.setId("button-box");
-        buttons.getChildren().addAll(addStudentButton, removeStudentButton);
+        GridPane buttonPane = new GridPane();
+        buttonPane.setId("grid-pane");
+        buttonPane.add(viewIndButton, 0, 0);
+        buttonPane.add(viewGroupButton, 1, 0);
+        buttonPane.add(addStudentButton, 0, 1);
+        buttonPane.add(removeStudentButton, 1, 1);
         GridPane studentPane = new GridPane();
         studentPane.setId("grid-pane");
-        studentPane.add(studentName, 0, 0);
+        studentPane.add(schoolAndStudent, 0, 0);
         studentPane.add(listBox, 1, 0);
         studentPane.add(setDirBtn, 0, 1);
         setDirBtn.setAlignment(Pos.CENTER);
-        studentPane.add(buttons, 1, 1);
+        studentPane.add(buttonPane, 1, 1);
         VBox layout = new VBox();
         layout.getChildren().addAll(menuBar, studentPane, listStatusText);
         layout.setId("layout");
