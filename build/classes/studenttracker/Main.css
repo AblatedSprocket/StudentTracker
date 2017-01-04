@@ -24,9 +24,7 @@
 }
 .menu-item .text {
     -fx-font-size: 10pt;
-
 }
-
 .menu-button {
     -fx-background-color: linear-gradient(#273235 0%, #4c5a5e 20%);
     -fx-background-radius: 2;
@@ -36,7 +34,6 @@
     -fx-border-width: 0 1 0 0;
     -fx-padding: 0 10 0 10;
     -fx-border-radius: 0;
-
 }
 .menu-button:pressed {
     -fx-translate-x: 1;
@@ -109,6 +106,7 @@
 }
 .list-view {
     -fx-pref-width: 250px;
+    -fx-pref-height: 100px;
     -fx-hgap: 20px;
     -fx-vgap: 20px;
     -fx-background-color: transparent;
@@ -122,7 +120,7 @@
     -fx-border-color: #bdbdbd;
     -fx-border-radius: 4;
     -fx-border-insets: 0 0 0 2;
-    -fx-padding: 6 4 6 4;
+    -fx-padding: 5 5 5 5;
 }
 .list-view *.decrement-button:pressed,
 .list-view *.increment-button:pressed {
@@ -130,17 +128,28 @@
     -fx-translate-y: 1;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 }
-#grid-pane {
-    -fx-hgap: 10;
-    -fx-vgap: 10;
+.box {
+    -fx-spacing: 30px;
+}
+.layout-box {
+    -fx-padding: 10px;
+    -fx-spacing: 30px;
+}
+.grid-pane {
+    -fx-hgap: 24;
+    -fx-vgap: 24;
 }
 #statusText {
     -fx-pref-width: 400px;
-    -fx-padding: 0 0 20 0;
+    -fx-padding: 0 0 0 20;
 }
 #layout {
     -fx-spacing: 15px;
     -fx-padding: 10px;
+}
+#date-pane {
+    -fx-hgap: 10;
+    -fx-vgap: 10;
 }
 .button {
     -fx-padding: 0;
@@ -168,7 +177,6 @@
 }
 .label {
     -fx-text-fill: #ffffff;
-
 }
 .text {
     -fx-font: 12pt "Arial";
@@ -180,12 +188,6 @@
     -fx-font-size: 24px;
     -fx-pref-width: 200px;
 }
-#schoolAndStudent-vbox {
-    -fx-spacing: 30px;
-}
-.dialog-pane {
-/*    -fx-background-color: blue;*/
-}
 .dialog-pane *.header-panel *.label {
     /*    -fx-background-color: -fx-box-border, linear-gradient(-fx-background, derive(-fx-background, 30%));*/
     -fx-background-color: transparent;
@@ -193,4 +195,7 @@
 }
 .dialog-pane *.header-panel {
     -fx-background-color: transparent;
+}
+#ok-button {
+    -fx-padding: 0 0 0 15;
 }
