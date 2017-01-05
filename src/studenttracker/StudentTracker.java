@@ -80,19 +80,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import static javafx.scene.paint.Color.rgb;
-import javax.print.Doc;
-import javax.print.DocFlavor;
-import javax.print.DocPrintJob;
-import javax.print.PrintException;
-import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
-import javax.print.SimpleDoc;
-import javax.print.attribute.DocAttributeSet;
-import javax.print.attribute.HashDocAttributeSet;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.MediaPrintableArea;
-import javax.print.attribute.standard.MediaSize;
 
 /**
  *
@@ -100,13 +87,13 @@ import javax.print.attribute.standard.MediaSize;
  */
 public class StudentTracker extends Application {
 
-    String schoolName;
-    String userPath;
-    String resourcePath;
-    String schoolPath;
-    String studentFilesPath;
-    static String dbName = "students";
-    List<String[]> backgroundList = new ArrayList<>();
+    private String schoolName;
+    private static final String userPath = System.getProperty("user.dir");
+    private static final String resourcePath = userPath + File.separator + "Resources";
+    private String schoolPath;
+    private String studentFilesPath;
+    private static final String dbName = "students";
+    private List<String[]> backgroundList = new ArrayList<>();
 
     enum Category {
         fullName, firstName, lastName, indStart, indEnd, groupStart, groupEnd,
@@ -117,10 +104,8 @@ public class StudentTracker extends Application {
 
     public void start(Stage primaryStage) {
         //Set class variables excluding selectedStudent.
-        userPath = System.getProperty("user.dir");
-        resourcePath = userPath + File.separator + "Resources";
+
         new File(resourcePath).mkdir();
-        //Obtain properties from properties file or create a properties file if none exists.
         Properties globalProperties = new Properties();
         establishGlobalProperties(globalProperties);
 
@@ -128,59 +113,55 @@ public class StudentTracker extends Application {
         new File(schoolPath).mkdir();
         studentFilesPath = schoolPath + File.separator + "Student Files";
         new File(studentFilesPath).mkdir();
-        Properties localProperties = new Properties();
+        final Properties localProperties = new Properties();
         establishLocalProperties(localProperties);
         checkDatabase();
-        List<String> studentList = new ArrayList<>();
-        String listPath = localProperties.getProperty("listPath");
+        final List<String> studentList = new ArrayList<>();
+        final String listPath = localProperties.getProperty("listPath");
         if (!listPath.isEmpty()) {
             readStudentList(studentList, listPath);
         }
-        ObservableList<String> observableStudentList
+        final ObservableList<String> observableStudentList
                 = FXCollections.observableList(studentList);
-        StringProperty listStatusTextProperty = new SimpleStringProperty();
-
-        Label schoolLabel = new Label("Active school:");
-        Label activeSchool = new Label();
-        StringProperty activeSchoolTextProperty = new SimpleStringProperty();
+        final StringProperty listStatusTextProperty = new SimpleStringProperty();
+        final Label schoolLabel = new Label("Active school:");
+        final Label activeSchool = new Label();
+        final StringProperty activeSchoolTextProperty = new SimpleStringProperty();
         activeSchoolTextProperty.setValue(globalProperties
                 .getProperty("selectedSchool"));
         activeSchool.textProperty().bind(activeSchoolTextProperty);
-
-        Label listStatusText = createStatusText(listStatusTextProperty);
+        final Label listStatusText = createStatusText(listStatusTextProperty);
         setListStatusTextProperty(listPath, listStatusTextProperty);
-        Label listLabel = new Label("Student Name:");
-        TextField studentField = new TextField();
-        ListView<String> visibleStudentList = createVisibleStudentList(
+        final Label listLabel = new Label("Student Name:");
+        final TextField studentField = new TextField();
+        final ListView<String> visibleStudentList = createVisibleStudentList(
                 observableStudentList, studentField);
-        Button setDirBtn = initDirectoryButton(visibleStudentList,
+        final Button setDirBtn = initDirectoryButton(visibleStudentList,
                 observableStudentList, studentList, studentField,
                 listStatusText, localProperties, listStatusTextProperty,
                 primaryStage);
-        Label studentListText = new Label("Student List:");
-
-        Button viewIndButton = initButton("ViewIndividualListButton.png", 110, 66);
+        final Label studentListText = new Label("Student List:");
+        final Button viewIndButton = initButton("ViewIndividualListButton.png", 110, 66);
         viewIndButton.setOnMouseClicked((MouseEvent event) -> {
             List<String> indList = collectCurrentEnrollment(Category.indStart,
                     Category.indEnd);
             initClientStage(indList, "Individual");
         });
-        Button viewGroupButton = initButton("ViewGroupListButton.png", 110, 66);
+        final Button viewGroupButton = initButton("ViewGroupListButton.png", 110, 66);
         viewGroupButton.setOnMouseClicked((MouseEvent event) -> {
             List<String> groupList = collectCurrentEnrollment(Category.groupStart,
                     Category.groupEnd);
             initClientStage(groupList, "Group");
         });
-        Button viewArchiveButton = initViewArchiveButton(visibleStudentList,
+        final Button viewArchiveButton = initViewArchiveButton(visibleStudentList,
                 observableStudentList, studentList, listStatusTextProperty,
                 localProperties, studentField);
-
-        Button archiveStudentButton = initButton("ArchiveStudentButton.png", 110, 66);
+        final Button archiveStudentButton = initButton("ArchiveStudentButton.png", 110, 66);
         archiveStudentButton.setOnAction((ActionEvent event) -> {
             confirmationAlert("Archive");
-            String selectedStudent = visibleStudentList.getSelectionModel()
+            final String selectedStudent = visibleStudentList.getSelectionModel()
                     .getSelectedItem().trim();
-            String[] fileName = new File(
+            final String[] fileName = new File(
                     localProperties.getProperty("listPath")).getName()
                     .split(" ");
             if (!fileName[0].equals("Modified")) {
@@ -194,27 +175,25 @@ public class StudentTracker extends Application {
                         .getProperty("listPath"),
                         listStatusTextProperty);
             }
-            addStudentToList(studentList, selectedStudent,
+            transferTableEntry(selectedStudent, "archive", "clients");
+            removeStudentFromList(studentList, selectedStudent,
                     localProperties.getProperty("listPath"));
             setFilteredList(visibleStudentList, observableStudentList,
                     studentField);
         });
-        Button addStudentButton = initButton("AddStudentButton.png", 110, 66);
+        final Button addStudentButton = initButton("AddStudentButton.png", 110, 66);
         addStudentButton.setOnAction((ActionEvent event) -> {
             initAddStudentStage(visibleStudentList, observableStudentList,
                     studentList, studentField, listStatusTextProperty,
                     localProperties);
         });
-        Button removeStudentButton = initRemoveStudentButton(localProperties,
+        final Button removeStudentButton = initRemoveStudentButton(localProperties,
                 listStatusTextProperty, visibleStudentList,
                 observableStudentList, studentList, studentField);
-        //Create MenuBar for access to readme file.
-        MenuBar menuBar = createMenu(visibleStudentList, observableStudentList,
+        final MenuBar menuBar = createMenu(visibleStudentList, observableStudentList,
                 studentList, listStatusTextProperty, globalProperties,
                 localProperties, primaryStage, listStatusText, studentField);
-
-        //Create GUI.
-        Scene scene = new Scene(primaryStageLayout(schoolLabel, activeSchool,
+        final Scene scene = new Scene(primaryStageLayout(schoolLabel, activeSchool,
                 listStatusText, listLabel, studentField, visibleStudentList,
                 setDirBtn, studentListText, viewIndButton, viewGroupButton,
                 viewArchiveButton, addStudentButton, removeStudentButton,
@@ -244,7 +223,7 @@ public class StudentTracker extends Application {
     }
 
     private void initClientStage(List<String> clientList, String group) {
-        ListView<String> visibleGroupList = new ListView(FXCollections
+        final ListView<String> visibleGroupList = new ListView(FXCollections
                 .observableList(clientList));
 
         setClickEvent(visibleGroupList);
@@ -321,7 +300,7 @@ public class StudentTracker extends Application {
             ObservableList<String> observableStudentList,
             List<String> studentList, StringProperty listStatusTextProperty,
             Properties localProperties, TextField studentField) {
-        List<String> archivedStudents = new ArrayList<String>();
+        List<String> archivedStudents = collectArchivedStudents();
         ListView<String> archiveList = new ListView<>(FXCollections
                 .observableList(archivedStudents));
         Button returnStudentButton = initButton("ReturnStudentButton.png", 110,
@@ -345,10 +324,13 @@ public class StudentTracker extends Application {
                             .getProperty("listPath"),
                             listStatusTextProperty);
                 }
+                transferTableEntry(selectedStudent, "clients", "archive");
                 addStudentToList(studentList, selectedStudent,
                         localProperties.getProperty("listPath"));
                 setFilteredList(visibleStudentList, observableStudentList,
                         studentField);
+                archivedStudents.remove(selectedStudent);
+                archiveList.refresh();
             }
         });
         Button printButton = initPrintButton(archivedStudents, "Archive");
@@ -375,7 +357,6 @@ public class StudentTracker extends Application {
             Properties globalProperties, Properties localProperties,
             Stage primaryStage, Label listStatusText, TextField studentField) {
         MenuBar menuBar = new MenuBar();
-        //Create File menu item.
         Menu fileMenu = new Menu("File");
         Menu changeSchool = new Menu("Change School");
         Menu assignDatabase = new Menu("Assign Database to...");
@@ -388,13 +369,10 @@ public class StudentTracker extends Application {
                 observableStudentList, studentList, listStatusTextProperty,
                 globalProperties, localProperties, primaryStage, changeSchool,
                 removeSchool, assignDatabase, listStatusText, studentField);
-        //Create readme menu item under file.
         MenuItem readMeMenu = buildReadMeMenuItem(primaryStage);
-        //Create close menu item under readme
         MenuItem closeItem = buildCloseMenuItem();
         fileMenu.getItems().addAll(changeSchool, addSchool,
                 removeSchool, assignDatabase, readMeMenu, closeItem);
-        //Add File menu to menuBar.
         menuBar.getMenus().add(fileMenu);
         return menuBar;
     }
@@ -423,9 +401,7 @@ public class StudentTracker extends Application {
                         studentFilesPath = schoolPath + File.separator + "Student Files";
                         storeGlobalProperties(globalProperties);
                         establishLocalProperties(localProperties);
-                        //Check on Databasse
                         checkDatabase();
-                        //Create resources folder if it does not exist.
                         if (!localProperties.getProperty("listPath").isEmpty()) {
                             readStudentList(studentList, localProperties.getProperty("listPath"));
                             System.out.println("Setting text fill to white in updateMenus!");
@@ -628,7 +604,7 @@ public class StudentTracker extends Application {
     private void checkDatabase() {
         File file = new File(schoolPath + File.separator + File.separator
                 + dbName + ".db");
-        if (!file.exists()) {
+//        if (!file.exists()) {
             try {
                 Class.forName("org.sqlite.JDBC");
                 try {
@@ -666,7 +642,7 @@ public class StudentTracker extends Application {
             } catch (ClassNotFoundException cnf) {
                 sqlErrorAlert(getTrace(cnf));
             }
-        }
+//        }
     }
 
     private String getTrace(Exception e) {
@@ -804,6 +780,37 @@ public class StudentTracker extends Application {
             sqlErrorAlert(getTrace(cnf));
         }
     }
+    
+    private List<String> collectArchivedStudents() {
+        List<String> list = new ArrayList<>();
+        try {
+            Class.forName("org.sqlite.JDBC");
+            try {
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:"
+                        + schoolPath + File.separator + dbName + ".db");
+                try {
+                    Statement stat = conn.createStatement();
+                    ResultSet rs = stat.executeQuery("select "
+                            + Category.fullName.toString() + " from archive;");
+                    while (rs.next()) {
+                        list.add(rs.getString("fullName"));
+                    }
+                    rs.close();
+                    stat.close();
+                    Collections.sort(list);
+                } catch (SQLException sql) {
+                    sqlErrorAlert(getTrace(sql));
+                }
+                conn.close();
+            } catch (SQLException sql) {
+                sqlErrorAlert(getTrace(sql));
+            }
+
+        } catch (ClassNotFoundException cnf) {
+            sqlErrorAlert(getTrace(cnf));
+        }
+        return list;
+    }
 
     private List<String> collectCurrentEnrollment(Category startCategory,
             Category endCategory) {
@@ -823,6 +830,7 @@ public class StudentTracker extends Application {
                         list.add(rs.getString("fullName"));
                     }
                     rs.close();
+                    stat.close();
                     Collections.sort(list);
                 } catch (SQLException sql) {
                     sqlErrorAlert(getTrace(sql));
@@ -844,11 +852,13 @@ public class StudentTracker extends Application {
             try {
                 Connection conn = DriverManager.getConnection("jdbc:sqlite:"
                         + schoolPath + File.separator + dbName + ".db");
+                
                 try {
                     Statement stat = conn.createStatement();
+                    System.out.println("Transferring " + fullName);
                     ResultSet rs = stat.executeQuery("select * from " + source
                             + " where " + Category.fullName.toString() + " = '"
-                            + fullName + "' limit 1;");
+                            + fullName + "';");
                     PreparedStatement prep = conn.prepareStatement("insert into "
                             + destination + " values (?, ?, ?, ?, ?, ?, ?, ?,"
                             + "?, ?, ?, ?, ?, ?, ?);");
@@ -873,7 +883,7 @@ public class StudentTracker extends Application {
                     conn.setAutoCommit(true);
                     stat.executeUpdate("delete from " + source + " where "
                             + Category.fullName.toString() + " = '" + fullName
-                            + "' limit 1;");
+                            + "';");
                     rs.close();
                     prep.close();
                 } catch (SQLException sql) {
@@ -2123,7 +2133,6 @@ public class StudentTracker extends Application {
             } catch (IOException io) {
                 System.err.println("Could not read readme file: " + io);
             }
-            //Add text to readme window
             Text readMeContent = new Text(readMeLines.toString());
             readMeContent.setWrappingWidth(400);
             ScrollPane readMePane = new ScrollPane();
@@ -2153,18 +2162,14 @@ public class StudentTracker extends Application {
             Stage primaryStage) {
         //Create button to choose student list directory.
 
-        //Create button.
         Button dirBtn = initButton("SetListButton.png", 110, 66);
         dirBtn.setId("dirBtn");
-        //Prompt user to choose student list file.
         FileChooser chooseList = new FileChooser();
         chooseList.setInitialDirectory(new File(resourcePath));
         chooseList.setTitle("Select Student List File");
         dirBtn.setOnAction((final ActionEvent event) -> {
             File listFile = chooseList.showOpenDialog(primaryStage);
-            //Perform actions only if a new list is chosen.
             if (listFile != null) {
-                //Modify properties file to reflect change in path of student list file.
                 File target = new File(schoolPath + File.separator
                         + listFile.getName());
                 try {
