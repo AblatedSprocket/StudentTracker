@@ -25,24 +25,20 @@ public class Student {
     }
 
     public void setStartInd() {
-        System.out.println("indStart is being modified!");
         this.indStartDate = LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("MM-dd-yyyy"));
     }
 
     public void setStartInd(String date) {
-        System.out.println("indStart is being modified!");
         this.indStartDate = date;
     }
 
     public void setEndInd() {
-        System.out.println("indEnd is being modified!");
         this.indEndDate = LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("MM-dd-yyyy"));
     }
 
     public void setEndInd(String date) {
-        System.out.println("indEnd is being modified!");
         this.indEndDate = date;
     }
 
@@ -109,7 +105,6 @@ public class Student {
     }
 
     public void removeForm(String form) {
-        System.out.println("Form to remove: '" + form + "'");
         List<String> formsList = Arrays.asList(this.forms.toString().split(";"));
         List<String> formsArray = new ArrayList<>();
         formsArray.addAll(formsList);
@@ -135,32 +130,26 @@ public class Student {
 
     public void toggleIEP() {
         this.hasIEP ^= true;
-        System.out.println("Toggled IEP!");
     }
 
     public void setIEP(Boolean has) {
         this.hasIEP = has;
-        System.out.println("Set IEP!");
     }
 
     public void toggle504() {
         this.has504 ^= true;
-        System.out.println("Toggled 504!");
     }
 
     public void set504(Boolean has) {
         this.has504 = has;
-        System.out.println("Set 504!");
     }
 
     public void toggleEval() {
         this.hasEval ^= true;
-        System.out.println("Toggled eval!!");
     }
 
     public void setEval(Boolean has) {
         this.hasEval = has;
-        System.out.println("Set eval!");
     }
 
     public String getFullName() {
