@@ -11,10 +11,12 @@
     -fx-background-insets: 0;
     -fx-background-color: transparent;
 }
+.button:selected:focused {
+}
 .button:pressed {
     -fx-translate-x: 1;
     -fx-translate-y: 1;
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0.5 , 0.5);
 }
 .check-box {
     -fx-font-size: 12pt;
@@ -62,12 +64,19 @@
 .h-box {
     -fx-spacing: 15px;
 }
+.header-box {
+    -fx-spacing: 5px;
+}
 .label {
     -fx-text-fill: #ffffff;
 }
 .layout-box {
     -fx-padding: 10px;
     -fx-spacing: 30px;
+}
+.list-cell:focused {
+    -fx-background-color: -fx-background;
+    -fx-background-insets: 0;
 }
 .list-view {
     -fx-pref-width: 235px;

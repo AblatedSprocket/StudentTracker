@@ -1,0 +1,8 @@
+Last Name 	First Name
+Cummings 	Edward
+Faulkner 	William
+Hemingway 	Ernest
+Kerouac 	Jack
+Leavitt 	Lance
+McCarthy 	Mary
+Warren 	Robert

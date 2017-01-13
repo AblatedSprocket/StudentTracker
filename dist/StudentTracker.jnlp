@@ -8,13 +8,12 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="lib\StudentTrackerPreloader.jar" size="2988" download="progress" />
-    <jar href="StudentTracker.jar" size="1173372" download="eager" />
+    <jar href="StudentTracker.jar" size="1253643" download="eager" />
     <jar href="lib\sqlite-jdbc-3.15.1.jar" size="4369865" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="StudentTracker" >
     <param name="requiredFXVersion" value="8.0+"/>
   </applet-desc>
-  <jfx:javafx-desc  width="800" height="600" main-class="studenttracker.StudentTracker"  name="StudentTracker"  preloader-class="studenttrackerpreloader.StudentTrackerPreloader"/>
+  <jfx:javafx-desc  width="800" height="600" main-class="studenttracker.StudentTracker"  name="StudentTracker" />
   <update check="always"/>
 </jnlp>
