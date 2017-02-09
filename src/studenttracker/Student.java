@@ -42,6 +42,14 @@ public class Student {
         this.indEndDate = date;
     }
 
+    public void incIndCount() {
+        this.indCt++;
+    }
+    
+    public void decIndCount() {
+        this.indCt--;
+    }
+    
     public void setStartGroup() {
         this.groupStartDate = LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("MM-dd-yyyy"));
@@ -58,6 +66,14 @@ public class Student {
 
     public void setEndGroup(String date) {
         this.groupEndDate = date;
+    }
+    
+    public void incGroupCount() {
+        this.groupCt++;
+    }
+    
+    public void decGroupCount() {
+        this.groupCt--;
     }
 
     public void setStartCheckIn() {
@@ -76,6 +92,14 @@ public class Student {
 
     public void setEndCheckIn(String date) {
         this.checkInEndDate = date;
+    }
+    
+    public void incCheckInCount() {
+        this.checkInCt++;
+    }
+    
+    public void decCheckInCount() {
+        this.checkInCt--;
     }
 
     public void addWalkIn() {
@@ -218,10 +242,13 @@ public class Student {
     private final String fullName;
     private String indStartDate = null;
     private String indEndDate = null;
+    private int indCt = 0;
     private String groupStartDate = null;
     private String groupEndDate = null;
+    private int groupCt = 0;
     private String checkInStartDate = null;
     private String checkInEndDate = null;
+    private int checkInCt = 0;
     private StringBuilder walkInDates = new StringBuilder("");
     private StringBuilder forms = new StringBuilder("");
     private StringBuilder notes = new StringBuilder("");

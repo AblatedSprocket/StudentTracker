@@ -82,6 +82,133 @@ import javafx.scene.image.ImageView;
 import static javafx.scene.control.OverrunStyle.LEADING_ELLIPSIS;
 import javafx.scene.input.MouseButton;
 import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
+import static javafx.scene.paint.Color.rgb;
 
 /**
  *
@@ -233,6 +360,15 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Initialize a generic button
+     *
+     * @param imageFile file to use as background image of button
+     * @param width value in pixels of width of button
+     * @param height value in pixels of height of button
+     * @return button with background image set to imageFile parameter and no
+     * text.
+     */
     private Button initButton(String imageFile, int width, int height) {
         Button button = new Button();
         Image buttonImage = new Image("/studenttracker/Icons/" + imageFile,
@@ -241,6 +377,17 @@ public class StudentTracker extends Application {
         return button;
     }
 
+    /**
+     * Initialize button which retrieves archive database table entries
+     *
+     * @param visibleStudentList
+     * @param observableStudentList
+     * @param studentList
+     * @param listStatusTextProperty
+     * @param localProperties
+     * @param studentField
+     * @return button which initializes a stage displaying archived students.
+     */
     private Button initViewArchiveButton(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, StringProperty listStatusTextProperty,
@@ -255,6 +402,17 @@ public class StudentTracker extends Application {
         return viewArchiveButton;
     }
 
+    /**
+     * Initializes a button for adding a form to a student's class instance and
+     * "clients" database table entry
+     *
+     * @param student
+     * @param parentStage
+     * @param forms
+     * @param visibleList
+     * @return button which initializes a FileChooser to select a file to add to
+     * a student's entry in the "clients" database table.
+     */
     private Button initAddFormButton(Student student, Stage parentStage,
             List forms, ListView visibleList) {
         Button addFormButton = initButton("AddFormButton.png", 110, 66);
@@ -281,8 +439,19 @@ public class StudentTracker extends Application {
         return addFormButton;
     }
 
-    private Button initRemoveFormButton(Student student, Stage parentStage,
-            List forms, ListView visibleList) {
+    /**
+     * Initializes a button for removing a form from a student's class instance
+     * and "clients" database table entry. Removed form is dictated by the
+     * selected entry in the parent stage's ListView element.
+     *
+     * @param student
+     * @param parentStage
+     * @param forms
+     * @param visibleList
+     * @return button which removes a form selected in a ListView.
+     */
+    private Button initRemoveFormButton(Student student, List forms,
+            ListView visibleList) {
         Button removeFormButton = initButton("RemoveFormButton.png", 110, 66);
         removeFormButton.setOnAction((ActionEvent event) -> {
             if (!forms.isEmpty()) {
@@ -303,7 +472,15 @@ public class StudentTracker extends Application {
         return removeFormButton;
     }
 
-    private Button createAddWalkInButton(Student student) {
+    /**
+     * Initializes a button which creates a stage prompting the user to add
+     * a walk-in as a date to a student's class instance and "clients" database
+     * table entry
+     *
+     * @param student
+     * @return button which initializes a stage used for adding a walk-in date.
+     */
+    private Button initAddWalkInButton(Student student) {
         Button addWalkInButton = initButton("AddWalkInButton.png", 110, 66);
         addWalkInButton.setOnAction((final ActionEvent addWalkAct) -> {
             String walkInDate = LocalDateTime.now().format(
@@ -341,6 +518,13 @@ public class StudentTracker extends Application {
         return addWalkInButton;
     }
 
+    /**
+     * Initializes a button which initializes a stage displaying more
+     * information on a specific student
+     *
+     * @param student
+     * @return button initializing a details stage
+     */
     private Button createDetailsButton(Student student) {
         Button detailsButton = initButton("DetailsButton.png", 110, 66);
         detailsButton.setOnAction((ActionEvent event) -> {
@@ -349,6 +533,14 @@ public class StudentTracker extends Application {
         return detailsButton;
     }
 
+    /**
+     * Initializes a button which sends a list to a local printer using default
+     * settings
+     *
+     * @param printList
+     * @param group
+     * @return button which prints a list.
+     */
     private Button initPrintButton(List<String> printList, String group) {
         Button printButton = initButton("PrintListButton.png", 110, 66);
         printButton.setOnAction((ActionEvent event) -> {
@@ -367,6 +559,17 @@ public class StudentTracker extends Application {
         return printButton;
     }
 
+    /**
+     * Initializes a button which removes a student's information from database
+     *
+     * @param localProperties
+     * @param listStatusTextProperty
+     * @param visibleStudentList
+     * @param observableStudentList
+     * @param studentList
+     * @param studentField
+     * @return button which removes student.
+     */
     private Button initRemoveStudentButton(Properties localProperties,
             StringProperty listStatusTextProperty,
             ListView<String> visibleStudentList,
@@ -399,12 +602,25 @@ public class StudentTracker extends Application {
         return removeStudentButton;
     }
 
+    /**
+     * Initializes button to set the source file for the student list
+     *
+     * @param visibleStudentList
+     * @param observableStudentList
+     * @param studentList
+     * @param studentField
+     * @param listStatusText
+     * @param localProperties
+     * @param listStatusTextProperty
+     * @param primaryStage
+     * @return button initializing a FileChooser prompting the user to select a
+     * student list file.
+     */
     private Button initDirectoryButton(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, TextField studentField,
             Label listStatusText, Properties localProperties,
             StringProperty listStatusTextProperty, Stage primaryStage) {
-        //Create button to choose student list directory.
 
         Button dirBtn = initButton("SetListButton.png", 110, 66);
         dirBtn.setId("dirBtn");
@@ -434,6 +650,22 @@ public class StudentTracker extends Application {
         return dirBtn;
     }
 
+    /**
+     * Initializes a file menu for performing actions affecting global program
+     * properties
+     *
+     * @param visibleStudentList passed to updateMenus and buildAddSchoolMenu
+     * @param observableStudentListpassed to updateMenus and buildAddSchoolMenu
+     * @param studentListpassed to updateMenus and buildAddSchoolMenu
+     * @param activeSchoolTextPropertypassed to updateMenus and buildAddSchoolMenu
+     * @param listStatusTextPropertypassed to updateMenus and buildAddSchoolMenu
+     * @param globalProperties passed to updateMenus and buildAddSchoolMenu
+     * @param localProperties passed to updateMenus and buildAddSchoolMenu
+     * @param primaryStage passed to updateMenus and buildAddSchoolMenu
+     * @param listStatusText passed to updateMenus and buildAddSchoolMenu
+     * @param studentField passed to updateMenus and buildAddSchoolMenu
+     * @return MenuBar with a file menu containing necessary functional items.
+     */
     private MenuBar createMenu(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, StringProperty activeSchoolTextProperty,
@@ -462,6 +694,25 @@ public class StudentTracker extends Application {
         return menuBar;
     }
 
+    /**
+     * Initializes a MenuItem used for adding a school to the program with its
+     * own local properties, students, and student files.
+     *
+     * @param visibleStudentList passed to initAddSchoolStage
+     * @param observableStudentList passed to initAddSchoolStage
+     * @param studentList passed to initAddSchoolStage
+     * @param activeSchoolTextProperty passed to initAddSchoolStage
+     * @param listStatusTextProperty passed to initAddSchoolStage
+     * @param globalProperties updated to include school added
+     * @param localProperties passed to initAddSchoolStage
+     * @param primaryStage passed to initAddSchoolStage
+     * @param changeSchool passed to initAddSchoolStage
+     * @param removeSchool passed to initAddSchoolStage
+     * @param assignDatabase passed to initAddSchoolStage
+     * @param listStatusText passed to initAddSchoolStage
+     * @param studentField passed to initAddSchoolStage
+     * @return MenuItem
+     */
     private MenuItem buildAddSchoolMenu(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, StringProperty activeSchoolTextProperty,
@@ -480,6 +731,13 @@ public class StudentTracker extends Application {
         return addSchool;
     }
 
+    /**
+     * Initializes MenuItem which initializes a stage displaying readme
+     * information
+     *
+     * @param primaryStage
+     * @return MenuItem displaying readme information
+     */
     private MenuItem buildReadMeMenuItem(Stage primaryStage) {
         //Create menu item for readme.
 
@@ -512,6 +770,11 @@ public class StudentTracker extends Application {
         return readMeMenu;
     }
 
+    /**
+     * Initializes MenuItem used to close application
+     *
+     * @return MenuItem used to close application.
+     */
     private MenuItem buildCloseMenuItem() {
         //Create menu item to exit application.
 
@@ -522,6 +785,28 @@ public class StudentTracker extends Application {
         return closeMenu;
     }
 
+    /**
+     * Updates menu items to reflect added or removed schools.
+     *
+     * @param visibleStudentList passed to changeSchool and assignDatabase for
+     * update
+     * @param observableStudentList passed to changeSchool and assignDatabase
+     * for update
+     * @param studentList passed to changeSchool and assignDatabase for update
+     * @param activeSchoolTextProperty passed to changeSchool and assignDatabase
+     * for update
+     * @param listStatusTextProperty passed to changeSchool and assignDatabase
+     * for update
+     * @param globalProperties updated to reflect user changes
+     * @param localProperties updated to reflect user changes
+     * @param primaryStage
+     * @param changeSchool updated to reflect user changes
+     * @param removeSchool updated to reflect user changes
+     * @param assignDatabase updated to reflect user changes
+     * @param listStatusText passed to changeSchool and assignDatabase for
+     * update
+     * @param studentField
+     */
     private void updateMenus(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, StringProperty activeSchoolTextProperty,
@@ -655,6 +940,12 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Adds contextMenu to noteArea
+     *
+     * @param noteArea modified to add contextMenu
+     * @param student object context menu items operate on
+     */
     private void showContextMenu(TextArea noteArea, Student student) {
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem print = new MenuItem("Print Notes");
@@ -677,6 +968,14 @@ public class StudentTracker extends Application {
         noteArea.setContextMenu(contextMenu);
     }
 
+    /**
+     * Initializes and instantiates a Label displaying status of student list or
+     * selected school.
+     *
+     * @param inputTxt modifies Label to reflect its text property
+     * @return label holding text properties to be modified to reflect user
+     * changes of files or schools.
+     */
     private Label createStatusText(StringProperty inputTxt) {
         Label statusText = new Label();
         statusText.setTextOverrun(LEADING_ELLIPSIS);
@@ -685,6 +984,18 @@ public class StudentTracker extends Application {
         return statusText;
     }
 
+    /**
+     * Initializes stage used for adding a student to the selected student list
+     *
+     * @param visibleStudentList modified to add the user-defined student
+     * @param observableStudentList modified to add the user-defined student
+     * @param studentList modified to add the user-defined student
+     * @param studentField modified listener to reflect updated list
+     * @param listStatusTextProperty modified to reflect possible changes in
+     * list file name
+     * @param localProperties modified to reflect possible changes in list file
+     * name
+     */
     private void initAddStudentStage(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, TextField studentField,
@@ -736,6 +1047,23 @@ public class StudentTracker extends Application {
         addStudentStage.show();
     }
 
+    /**
+     * Initializes a stage used to add a school to switch between
+     *
+     * @param visibleStudentList passed to updateMenus
+     * @param observableStudentList passed to updateMenus
+     * @param studentList passed to updateMenus
+     * @param activeSchoolTextProperty passed to updateMenus
+     * @param listStatusTextProperty passed to updateMenus
+     * @param globalProperties modified by user input in addSchoolStage
+     * @param localProperties passed to updateMenus
+     * @param primaryStage passed to updateMenus
+     * @param changeSchool passed to updateMenus
+     * @param removeSchool passed to updateMenus
+     * @param assignDatabase passed to updateMenus
+     * @param listStatusText passed to updateMenus
+     * @param studentField passed to updateMenus
+     */
     private void initAddSchoolStage(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, StringProperty activeSchoolTextProperty,
@@ -795,6 +1123,13 @@ public class StudentTracker extends Application {
         addSchoolStage.show();
     }
 
+    /**
+     * Initializes stage displaying a list of either group counseling clients or
+     * individual counseling clients with print functionality.
+     *
+     * @param clientList modifies clientStage
+     * @param group modifies clientStage
+     */
     private void initClientStage(List<String> clientList, String group) {
         final ListView<String> visibleGroupList = new ListView(FXCollections
                 .observableList(clientList));
@@ -830,6 +1165,17 @@ public class StudentTracker extends Application {
         clientStage.show();
     }
 
+    /**
+     * Creates stage displaying archivedStudents when viewArchiveStudentsButton
+     * is clicked.
+     *
+     * @param visibleStudentList modifies archiveStage
+     * @param observableStudentList modifies archiveStage
+     * @param studentList modifies archiveStage
+     * @param listStatusTextProperty modifies archiveStage
+     * @param localProperties modifies archiveStage
+     * @param studentField modifies archiveStage
+     */
     private void initArchiveStage(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, StringProperty listStatusTextProperty,
@@ -917,6 +1263,26 @@ public class StudentTracker extends Application {
         archiveStage.show();
     }
 
+    /**
+     * Initializes stage for removing a school from Student Tracker file
+     * system.
+     *
+     * @param visibleStudentList passed to updateMenus method
+     * @param observableStudentList passed to updateMenus method
+     * @param studentList passed to updateMenus method
+     * @param schools passed to updateMenus method
+     * @param school passed to updateMenus method
+     * @param globalProperties passed to updateMenus method
+     * @param localProperties passed to updateMenus method
+     * @param activeSchoolTextProperty passed to updateMenus method
+     * @param listStatusTextProperty passed to updateMenus method
+     * @param primaryStage passed to updateMenus method
+     * @param changeSchool updated to reflect removed school
+     * @param removeSchool updated to reflect removed school
+     * @param assignDatabase updated to reflect removed school
+     * @param studentField passed to updateMenus method
+     * @param listStatusText passed to updateMenus method
+     */
     private void initRemoveSchoolStage(ListView<String> visibleStudentList,
             ObservableList<String> observableStudentList,
             List<String> studentList, List<String> schools, String school,
@@ -938,7 +1304,7 @@ public class StudentTracker extends Application {
                         + school));
                 List<String> removeList = new ArrayList<>(schools);
                 Collections.sort(removeList);
-                Boolean check = removeList.remove(school);
+                removeList.remove(school);
                 updateGlobalPropertiesFromList(globalProperties, removeList);
                 updateMenus(visibleStudentList,
                         observableStudentList, studentList,
@@ -966,6 +1332,11 @@ public class StudentTracker extends Application {
         removeSchoolStage.show();
     }
 
+    /**
+     * Creates stage when student in archiveList is double-clicked.
+     * 
+     * @param student modifies archivedStudentStage
+     */
     private void initArchivedStudentStage(Student student) {
         String studentName = student.getFullName();
         Stage studentStage = new Stage();
@@ -1028,6 +1399,11 @@ public class StudentTracker extends Application {
         studentStage.show();
     }
 
+    /**
+     * Creates stage when student in visibleStudentList is double-clicked.
+     * 
+     * @param student modifies studentStage
+     */
     private void initStudentStage(Student student) {
         String studentName = student.getFullName();
         Stage studentStage = new Stage();
@@ -1080,7 +1456,7 @@ public class StudentTracker extends Application {
         modDate.setOnMouseClicked((MouseEvent event) -> {
             modifyStudentDialog(student, indBox, groupBox, checkInBox);
         });
-        Button addWalkInButton = createAddWalkInButton(student);
+        Button addWalkInButton = initAddWalkInButton(student);
         Button viewWalkInButton = initButton("ViewWalkInButton.png", 110, 66);
         viewWalkInButton.setOnAction((ActionEvent event) -> {
             initViewWalkInStage(student);
@@ -1104,6 +1480,11 @@ public class StudentTracker extends Application {
         studentStage.show();
     }
 
+    /**
+     * Creates stage when viewWalkInButton is clicked.
+     * 
+     * @param student 
+     */
     private void initViewWalkInStage(Student student) {
         Stage viewWalkInStage = new Stage();
         viewWalkInStage.getIcons().add(new Image("/studenttracker/Icons/StudentTrackerIcon.png"));
@@ -1133,6 +1514,12 @@ public class StudentTracker extends Application {
         viewWalkInStage.show();
     }
 
+    /**
+     * Creates an archivedDetails stage when viewArchivedStudentsButton is
+     * clicked.
+     * 
+     * @param student modifies archivedDetailsStage
+     */
     private void initArchivedDetailsStage(Student student) {
         Stage detailsStage = new Stage();
         detailsStage.getIcons().add(new Image("/studenttracker/Icons/StudentTrackerIcon.png"));
@@ -1224,6 +1611,11 @@ public class StudentTracker extends Application {
         detailsStage.show();
     }
 
+    /**
+     * Creates a details stage when details button is clicked.
+     * 
+     * @param student modifies detailsStage
+     */
     private void initDetailsStage(Student student) {
         Stage detailsStage = new Stage();
         detailsStage.getIcons().add(new Image("/studenttracker/Icons/StudentTrackerIcon.png"));
@@ -1287,8 +1679,7 @@ public class StudentTracker extends Application {
         Button addFormButton = initAddFormButton(student, detailsStage, forms,
                 visibleFormList);
 
-        Button removeFormButton = initRemoveFormButton(student, detailsStage,
-                forms, visibleFormList);
+        Button removeFormButton = initRemoveFormButton(student, forms, visibleFormList);
 
         Label noteText = new Label("Notes:");
         TextArea noteArea = new TextArea();
@@ -1323,6 +1714,12 @@ public class StudentTracker extends Application {
         detailsStage.show();
     }
 
+    /**
+     * Creates a dialog to view counseling start and end dates of archived
+     * student.
+     * 
+     * @param student 
+     */
     private void viewStudentDialog(Student student) {
         Label modifyPrompt = new Label("The following are "
                 + student.getFullName() + "'s counseling start and end dates.");
@@ -1393,6 +1790,14 @@ public class StudentTracker extends Application {
         modStudentStage.show();
     }
 
+    /**
+     * Creates a dialog for user to modify start and end dates of counseling.
+     * 
+     * @param student
+     * @param indBox modified based on user input
+     * @param groupBox modified based on user input
+     * @param checkInBox modified based on user input
+     */
     private void modifyStudentDialog(Student student, CheckBox indBox,
             CheckBox groupBox, CheckBox checkInBox) {
 
@@ -1424,12 +1829,12 @@ public class StudentTracker extends Application {
         Button okButton = initButton("OKButton.png", 55, 33);
         okButton.setOnAction((ActionEvent event) -> {
             try {
-                checkFieldText(startIndField, student);
-                checkFieldText(endIndField, student);
-                checkFieldText(startGroupField, student);
-                checkFieldText(endGroupField, student);
-                checkFieldText(startCheckInField, student);
-                checkFieldText(endCheckInField, student);
+                checkFieldText(startIndField);
+                checkFieldText(endIndField);
+                checkFieldText(startGroupField);
+                checkFieldText(endGroupField);
+                checkFieldText(startCheckInField);
+                checkFieldText(endCheckInField);
 
                 if (startIndField.getText() == null || startIndField.getText()
                         .equals("")) {
@@ -1516,6 +1921,12 @@ public class StudentTracker extends Application {
 
     }
 
+    /**
+     * Creates an error dialog informing the user of a program error.
+     * 
+     * @param error
+     * @param trace 
+     */
     private void errorAlert(String error, String trace) {
         String alertText = null;
         switch (error) {
@@ -1548,6 +1959,12 @@ public class StudentTracker extends Application {
             case "No Student":
                 alertText = "No data for selected student, cannot archive.";
                 break;
+            case "Print Error":
+                alertText = "Error printing file!";
+                break;
+            case "Write Error":
+                alertText = "Could not write to file!";
+                break;
             default:
                 alertText = "";
         }
@@ -1568,7 +1985,13 @@ public class StudentTracker extends Application {
         errAlert.showAndWait();
     }
 
-    private void confirmationAlert(String type) {
+    /**
+     * Creates a confirmation dialog prompting the user to confirm action.
+     * 
+     * @param type modifies confAlert
+     * @throws IllegalArgumentException if OK button is not pressed.
+     */
+    private void confirmationAlert(String type) throws IllegalArgumentException{
         String alertText = null;
         switch (type) {
             case "Archive":
@@ -1617,6 +2040,11 @@ public class StudentTracker extends Application {
         });
     }
 
+    /**
+     * Creates an error dialog when an SQLException is thrown.
+     * 
+     * @param trace modifies text in error dialog
+     */
     private void sqlErrorAlert(String trace) {
         Alert sqlErrorAlert = new Alert(Alert.AlertType.ERROR,
                 "Error interfacing with database:\n" + trace);
@@ -1634,6 +2062,15 @@ public class StudentTracker extends Application {
         sqlErrorAlert.showAndWait();
     }
 
+    /**
+     * Creates layout for stage generated when addStudentButton is clicked.
+     * 
+     * @param addText modifies stageLayout
+     * @param addField modifies stageLayout
+     * @param okButton modifies stageLayout
+     * @param cancelButton modifies stageLayout
+     * @return stageLayout consisting of all interface elements.
+     */
     private VBox addStudentStageLayout(Label addText,
             TextField addField, Button okButton, Button cancelButton) {
         HBox buttons = new HBox();
@@ -1648,22 +2085,43 @@ public class StudentTracker extends Application {
         return stageLayout;
     }
 
+    /**
+     * Creates layout for stage generated when removeSchoolButton is clicked.
+     * 
+     * @param removeText modifies stageLayout
+     * @param okButton modifies stageLayout
+     * @param cancelButton modifies stageLayout
+     * @return stageLayout consisting of all interface elements.
+     */
     private VBox removeSchoolStageLayout(Label removeText, Button okButton,
             Button cancelButton) {
         HBox buttons = new HBox();
         buttons.setId("exit-button");
         buttons.getChildren().addAll(okButton, cancelButton);
-        VBox layout = new VBox();
-
-        layout.setId("layout");
-        layout.getChildren().addAll(removeText, buttons);
-        return layout;
+        VBox stageLayout = new VBox();
+        stageLayout.setId("layout");
+        stageLayout.getChildren().addAll(removeText, buttons);
+        return stageLayout;
     }
 
+    /**
+     * Creates layout for stage generated when archivedStudentButton is clicked.
+     * 
+     * @param indBox modifies stageLayout
+     * @param groupBox modifies stageLayout
+     * @param checkInBox modifies stageLayout
+     * @param viewDate modifies stageLayout
+     * @param viewWalkInButton modifies stageLayout
+     * @param detailsButton modifies stageLayout
+     * @param okButton modifies stageLayout
+     * @param cancelButton modifies stageLayout
+     * @param title modifies stageLayout
+     * @return stageLayout consisting of all interface elements.
+     */
     private VBox archivedStudentStageLayout(CheckBox indBox, CheckBox groupBox,
             CheckBox checkInBox, Label viewDate,
-            Button viewWalkInButton, Button detailsButton, Button okButton, Button cancelButton,
-            Label title) {
+            Button viewWalkInButton, Button detailsButton, Button okButton,
+            Button cancelButton, Label title) {
         HBox buttons = new HBox();
         buttons.getStyleClass().setAll("h-box");
         buttons.getChildren().addAll(viewWalkInButton, detailsButton);
@@ -1674,12 +2132,28 @@ public class StudentTracker extends Application {
         exitButtons.getStyleClass().setAll("h-box");
         exitButtons.setId("exit-button");
         exitButtons.getChildren().addAll(okButton, cancelButton);
-        VBox contentBox = new VBox();
-        contentBox.setId("layout");
-        contentBox.getChildren().addAll(title, checkBoxBox, buttons, exitButtons);
-        return contentBox;
+        VBox stageLayout = new VBox();
+        stageLayout.setId("layout");
+        stageLayout.getChildren().addAll(title, checkBoxBox, buttons, exitButtons);
+        return stageLayout;
     }
 
+    /**
+     * Creates layout for stage generated when visibleStudentList entry is
+     * double-clicked.
+     *
+     * @param indBox modifies stageLayout
+     * @param groupBox modifies stageLayout
+     * @param checkInBox modifies stageLayout
+     * @param modDate modifies stageLayout
+     * @param addWalkInButton modifies stageLayout
+     * @param viewWalkInButton modifies stageLayout
+     * @param detailsButton modifies stageLayout
+     * @param okButton modifies stageLayout
+     * @param cancelButton modifies stageLayout
+     * @param title modifies stageLayout
+     * @return stageLayout consisting of all interface elements.
+     */
     private VBox studentStageLayout(CheckBox indBox, CheckBox groupBox,
             CheckBox checkInBox, Label modDate, Button addWalkInButton,
             Button viewWalkInButton, Button detailsButton, Button okButton,
@@ -1694,12 +2168,27 @@ public class StudentTracker extends Application {
         exitButtons.getStyleClass().setAll("h-box");
         exitButtons.setId("exit-button");
         exitButtons.getChildren().addAll(okButton, cancelButton);
-        VBox contentBox = new VBox();
-        contentBox.setId("layout");
-        contentBox.getChildren().addAll(title, checkBoxBox, buttons, exitButtons);
-        return contentBox;
+        VBox stageLayout = new VBox();
+        stageLayout.setId("layout");
+        stageLayout.getChildren().addAll(title, checkBoxBox, buttons, exitButtons);
+        return stageLayout;
     }
 
+    /**
+     * Creates a layout for stage opened when a list entry in archived list is
+     * double-clicked.
+     *
+     * @param iepBox modifies stageLayout
+     * @param ffBox modifies stageLayout
+     * @param evalBox modifies stageLayout
+     * @param formText modifies stageLayout
+     * @param visibleFormList modifies stageLayout
+     * @param noteText modifies stageLayout
+     * @param noteArea modifies stageLayout
+     * @param okButton modifies stageLayout
+     * @param cancelButton modifies stageLayout
+     * @return stageLayout consisting of all interface elements.
+     */
     private VBox archivedDetailsStageLayout(CheckBox iepBox, CheckBox ffBox,
             CheckBox evalBox, Label formText,
             ListView<String> visibleFormList, Label noteText,
@@ -1721,6 +2210,23 @@ public class StudentTracker extends Application {
         return stageLayout;
     }
 
+    /**
+     * Creates layout for stage that is opened when details button in
+     * studentStage entry is clicked.
+     *
+     * @param iepBox modifies stageLayout
+     * @param ffBox modifies stageLayout
+     * @param evalBox modifies stageLayout
+     * @param formText modifies stageLayout
+     * @param visibleFormList modifies stageLayout
+     * @param addFormButton modifies stageLayout
+     * @param removeFormButton modifies stageLayout
+     * @param noteText modifies stageLayout
+     * @param noteArea modifies stageLayout
+     * @param okButton modifies stageLayout
+     * @param cancelButton modifies stageLayout
+     * @return stageLayout consisting of all interface elements.
+     */
     private VBox detailsStageLayout(CheckBox iepBox, CheckBox ffBox,
             CheckBox evalBox, Label formText, ListView<String> visibleFormList,
             Button addFormButton, Button removeFormButton, Label noteText,
@@ -1746,6 +2252,26 @@ public class StudentTracker extends Application {
         return stageLayout;
     }
 
+    /**
+     * Creates layout using passed parameters
+     *
+     * @param schoolLabel modifies stageLayout
+     * @param activeSchool modifies stageLayout
+     * @param listStatusText modifies stageLayout
+     * @param fieldLabel modifies stageLayout
+     * @param studentField modifies stageLayout
+     * @param visibleStudentList modifies stageLayout
+     * @param setDirBtn modifies stageLayout
+     * @param listLabel modifies stageLayout
+     * @param viewIndButton modifies stageLayout
+     * @param viewGroupButton modifies stageLayout
+     * @param viewArchiveButton modifies stageLayout
+     * @param addStudentButton modifies stageLayout
+     * @param removeStudentButton modifies stageLayout
+     * @param archiveStudentButton modifies stageLayout
+     * @param menuBar modifies stageLayout
+     * @return windowContent containing all interface elements.
+     */
     private VBox primaryStageLayout(Label schoolLabel, Label activeSchool,
             Label listStatusText, Label fieldLabel, TextField studentField,
             ListView<String> visibleStudentList, Button setDirBtn,
@@ -1753,7 +2279,6 @@ public class StudentTracker extends Application {
             Button viewArchiveButton, Button addStudentButton,
             Button removeStudentButton, Button archiveStudentButton,
             MenuBar menuBar) {
-        //Creates GUI elements and layout.
 
         VBox studentName = new VBox();
         studentName.getStyleClass().setAll("header-box");
@@ -1793,21 +2318,33 @@ public class StudentTracker extends Application {
         VBox layout = new VBox();
         layout.getChildren().addAll(menuBar, layoutPane, listStatusText);
         layout.getStyleClass().setAll("layout-box");
-        VBox windowContent = new VBox();
-        windowContent.getChildren().addAll(menuBar, layout);
-        return windowContent;
+        VBox stageLayout = new VBox();
+        stageLayout.getChildren().addAll(menuBar, layout);
+        return stageLayout;
     }
 
+    /**
+     * Sets textProperty of listStatusTextProperty.
+     *
+     * @param listPath modifies listStatusTextProperty
+     * @param listStatusTextProperty modified by listPath
+     */
     private void setListStatusTextProperty(String listPath,
             StringProperty listStatusTextProperty) {
         if (listPath.isEmpty()) {
-            listStatusTextProperty.set("Selected Student List:\nNONE");
+            listStatusTextProperty.set("Selected student list:\nNONE");
         } else {
-            listStatusTextProperty.set("Selected Student List:\n"
+            listStatusTextProperty.set("Selected student list:\n"
                     + listPath);
         }
     }
 
+    /**
+     * Modifies globalProperties list of schools to reflect entries in list.
+     *
+     * @param globalProperties modified by list
+     * @param list modifies globalProperties
+     */
     private void updateGlobalPropertiesFromList(Properties globalProperties,
             List<String> list) {
         if (!list.isEmpty()) {
@@ -1824,6 +2361,9 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Checks if database file exists and creates the file if he does not.
+     */
     private void checkDatabase() {
         File file = new File(schoolPath + File.separator + File.separator
                 + dbName + ".db");
@@ -1872,6 +2412,11 @@ public class StudentTracker extends Application {
         return sw.toString();
     }
 
+    /**
+     * Removes entry from database corresponding to name.
+     *
+     * @param name modifies database.
+     */
     private void removeFromStudentTable(String name) {
         Connection conn = null;
         Statement stat = null;
@@ -1902,6 +2447,13 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Modifies an entry in database whose column is determined by cat and value
+     * is determined by student and cat. student
+     *
+     * @param cat modifies column in database
+     * @param student
+     */
     private void modifyDatabase(Category cat, Student student) {
         Connection conn = null;
         PreparedStatement update = null;
@@ -1975,6 +2527,11 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Refreshes data in database based on values in student.
+     *
+     * @param student modifies database table
+     */
     private void refreshDatabase(Student student) {
         Connection conn = null;
         PreparedStatement prep = null;
@@ -2022,6 +2579,11 @@ public class StudentTracker extends Application {
 
     }
 
+    /**
+     * Collects names of all students in archive table in database
+     *
+     * @return list of all students in archive table in database
+     */
     private List<String> collectArchivedStudents() {
         List<String> list = new ArrayList<>();
         Connection conn = null;
@@ -2065,6 +2627,14 @@ public class StudentTracker extends Application {
         return list;
     }
 
+    /**
+     * Creates a list of students by collecting all students in database with a
+     * defined value in startCategory and null value in endCategory
+     *
+     * @param startCategory
+     * @param endCategory
+     * @return list containing all students enrolled in startCategory
+     */
     private List<String> collectCurrentEnrollment(Category startCategory,
             Category endCategory) {
         List<String> list = new ArrayList<>();
@@ -2110,6 +2680,14 @@ public class StudentTracker extends Application {
         return list;
     }
 
+    /**
+     * Transfers an entry from source table to destination table in clients.db
+     * file.
+     *
+     * @param fullName
+     * @param destination modified by source
+     * @param source modifies destination using fullName
+     */
     private void transferTableEntry(String fullName, String destination,
             String source) {
         Connection conn = null;
@@ -2179,6 +2757,13 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Checks whether or not an entry exists in the table for a specified
+     * student.
+     *
+     * @param student
+     * @throws SQLException if no data are found.
+     */
     private void checkStudent(String student) throws SQLException {
         Connection conn = null;
         Statement stat = null;
@@ -2190,7 +2775,7 @@ public class StudentTracker extends Application {
             stat = conn.createStatement();
             rs = stat.executeQuery("select * from clients where "
                     + Category.fullName.toString() + " = '" + student + "';");
-            String check = rs.getString(Category.fullName.toString());
+            rs.getString(Category.fullName.toString());
         } catch (ClassNotFoundException cnf) {
             sqlErrorAlert(getTrace(cnf));
         } finally {
@@ -2215,6 +2800,11 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Retrieves data from archive corresponding to student name.
+     *
+     * @param student
+     */
     private void accessArchive(Student student) {
         Connection conn = null;
         Statement stat = null;
@@ -2268,6 +2858,12 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Retrieves data from client database corresponding to student name.
+     * Creates entry for student in database if no data exist.
+     *
+     * @param student
+     */
     private void accessDatabase(Student student) {
         try {
             Class.forName("org.sqlite.JDBC");
@@ -2357,7 +2953,15 @@ public class StudentTracker extends Application {
         }
     }
 
-    public void setFilteredList(ListView<String> listView,
+    /**
+     * Creates a filterable ObservableList and sets its contents to
+     * visibleStudentList.
+     *
+     * @param visibleStudentList modified to show filterable list
+     * @param observableList modifies filterable list
+     * @param studentField listened to for filtering
+     */
+    public void setFilteredList(ListView<String> visibleStudentList,
             ObservableList<String> observableList, TextField studentField) {
         FilteredList<String> filteredItems = new FilteredList<>(observableList,
                 p -> true);
@@ -2373,27 +2977,34 @@ public class StudentTracker extends Application {
                 });
             });
         });
-        listView.setItems(filteredItems);
+        visibleStudentList.setItems(filteredItems);
     }
 
+    /**
+     * Creates ListView presenting students in current list file to user. Also
+     * creates user interaction functionality.
+     *
+     * @param observableStudentList modifies visibleStudentList
+     * @param studentField passed to setFilteredList method
+     * @return visibleStudentList for main window student list
+     */
     private ListView<String> createVisibleStudentList(
             ObservableList<String> observableStudentList,
             TextField studentField) {
         ListView<String> visibleStudentList = new ListView<>();
         visibleStudentList.setEditable(false);
         visibleStudentList.isVisible();
-        if (observableStudentList.isEmpty()) {
-            List<String> emptyList = new ArrayList<>();
-            emptyList.add("");
-            visibleStudentList.setItems(FXCollections
-                    .observableList(emptyList));
-        }
         setFilteredList(visibleStudentList, observableStudentList,
                 studentField);
         setClickEvent(visibleStudentList);
         return visibleStudentList;
     }
 
+    /**
+     * Creates double-click function for visibleStudentList
+     *
+     * @param visibleStudentList modified to add double-click function
+     */
     private void setClickEvent(ListView<String> visibleStudentList) {
         visibleStudentList.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() == 2 && !event.isConsumed()) {
@@ -2411,6 +3022,12 @@ public class StudentTracker extends Application {
         });
     }
 
+    /**
+     * Sets "checked" value of CheckBox based on student
+     *
+     * @param box modified based on qualifications of Student instance.
+     * @param student modifies box
+     */
     private void setCheck(CheckBox box, Student student) {
         switch (box.getId()) {
             case "indB":
@@ -2445,7 +3062,13 @@ public class StudentTracker extends Application {
         }
     }
 
-    private void checkFieldText(TextField field, Student student)
+    /**
+     * Checks whether or not text from TextField is formatted properly.
+     *
+     * @param field
+     * @throws DataFormatException if text is not formatted properly.
+     */
+    private void checkFieldText(TextField field)
             throws DataFormatException {
         if (field.getText() == null || field.getText().equals("")) {
         } else if (Pattern.matches("[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]",
@@ -2455,6 +3078,14 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Method for calling dialog when adding a date to a counseling area
+     * (individual, group, check-in).
+     *
+     * @param box modified based on user input in generated dialog
+     * @param student modified based on user input in generated dialog
+     * @param cat checks student to determine dialog text
+     */
     private void addBoxFunction(CheckBox box, Student student, Category cat) {
 
         String date = LocalDateTime.now().format(
@@ -2530,6 +3161,13 @@ public class StudentTracker extends Application {
         setCheck(box, student);
     }
 
+    /**
+     * Checks whether or not a field in student has data by using cat.
+     *
+     * @param cat
+     * @param student
+     * @return boolean true if check passed, false if check failed.
+     */
     private boolean checkStudentData(Category cat, Student student) {
         String check = null;
         boolean val = false;
@@ -2575,6 +3213,13 @@ public class StudentTracker extends Application {
         return val;
     }
 
+    /**
+     * Modifies fields in Student instance using input parameters
+     *
+     * @param cat modifies field in Student instance based on value
+     * @param student modified field based on cat with value of date
+     * @param date modifies field in student based on cat
+     */
     private void modifyStudent(Category cat, Student student, String date) {
         switch (cat.toString()) {
             case "indStart":
@@ -2604,6 +3249,16 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Formats an input name to comply with contracts of other methods. Takes a
+     * a first name and multi-word last name where a word is a string separated
+     * by spaces and returns a two-value String array of format. [lastName,
+     * firstName]
+     *
+     * @param name modifies formattedName
+     * @return formattedName
+     * @throws DataFormatException if name has less than two Strings.
+     */
     private String[] formatName(String name) throws DataFormatException {
         String[] splitName = name.split(" ");
         if (splitName.length < 2) {
@@ -2618,11 +3273,20 @@ public class StudentTracker extends Application {
         return formattedName;
     }
 
+    /**
+     * Adds a name to the selected student list and changes list name by
+     * prepending "modified" to the list name if it has not already been
+     * modified.
+     *
+     * @param studentList
+     * @param name modifies a copy of student list
+     * @param listPath modified to reflect change in name of student list
+     */
     private void addStudentToList(List<String> studentList, String name,
             String listPath) {
         try {
             String[] formattedName = formatName(name);
-            Boolean check = backgroundList.add(formattedName);
+            backgroundList.add(formattedName);
             writeStudentList(listPath);
             readStudentList(studentList, listPath);
         } catch (DataFormatException df) {
@@ -2630,6 +3294,15 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Removes a student from the selected student list and changes list name by
+     * prepending "modified" to the list name if it has not already been
+     * modified. Student data is also removed from the client database.
+     *
+     * @param studentList copy modifed by name
+     * @param name modifies copy of studentlist
+     * @param listPath modified to reflect change in list name
+     */
     private void removeStudentFromList(List<String> studentList, String name,
             String listPath) {
         try {
@@ -2650,6 +3323,11 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Writes student list to a .txt file.
+     *
+     * @param listPath student list written to this path
+     */
     private void writeStudentList(String listPath) {
         List<String> writeList = new ArrayList<>();
         for (int i = 0; i < backgroundList.size(); i++) {
@@ -2676,13 +3354,21 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Reads a student list from a properly formatted .txt file. List must
+     * contain columns separated by tabs "/t" and two columns must exist named
+     * lastName and firstName.
+     *
+     * @param studentList modified by file located at stdntLstPath
+     * @param studentListPath modifies studentList by file at path
+     */
     private void readStudentList(List<String> studentList,
-            String stdntLstPath) {
+            String studentListPath) {
         //reads student list from text file.
 
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(stdntLstPath)));
+                    new FileInputStream(studentListPath)));
             String[] colNames = reader.readLine().split("\\t");
             int firstNameInd = 0;
             int lastNameInd = 0;
@@ -2712,6 +3398,11 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Reads global properties from global.properties file.
+     *
+     * @param globalProperties modified by global.properties file
+     */
     private void establishGlobalProperties(Properties globalProperties) {
         File globalPropFile = new File(resourcePath + File.separator
                 + "global.properties");
@@ -2731,6 +3422,11 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Reads local properties from local.properties file.
+     *
+     * @param localProperties modified by local.properties file
+     */
     private void establishLocalProperties(Properties localProperties) {
         //Retrieves properties or creates properties file if none exists.
 
@@ -2752,6 +3448,11 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Writes globalProperties to external file global.properties.
+     *
+     * @param globalProperties modifies global.properties file
+     */
     private void storeGlobalProperties(Properties globalProperties) {
         try (FileOutputStream writeProp = new FileOutputStream(
                 resourcePath + File.separator + "global.properties")) {
@@ -2761,6 +3462,11 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Writes localProperties to external file local.properties.
+     *
+     * @param localProperties modifies local.properties file
+     */
     private void storeLocalProperties(Properties localProperties) {
         try {
             FileOutputStream writeProp = new FileOutputStream(
@@ -2772,6 +3478,12 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Deletes directory of files.
+     *
+     * @param directory to be deleted
+     * @throws IOException if directory cannot be found or deleted.
+     */
     private void deleteDirectory(Path directory) throws IOException {
         Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
             @Override
@@ -2790,6 +3502,15 @@ public class StudentTracker extends Application {
         });
     }
 
+    /**
+     * Copies a file from its source location to a given location inside
+     * StudentTracker's file hierarchy.
+     *
+     * @param source
+     * @param target
+     * @throws IllegalArgumentException if source cannot be found or target
+     * cannot be created.
+     */
     private void copy(File source, File target)
             throws IllegalArgumentException {
         /* copy 
@@ -2817,11 +3538,18 @@ public class StudentTracker extends Application {
         }
     }
 
+    /**
+     * Sends a list to the default printer
+     *
+     * @param printList
+     * @param printFile
+     * @param header added as first line of printFile
+     */
     private void print(List<String> printList, String printFile, String header) {
 
         new File(schoolPath + File.separator + "Printed Lists").mkdir();
         try {
-            
+
             BufferedWriter printWriter = new BufferedWriter(
                     new OutputStreamWriter(new FileOutputStream(
                             new File(printFile))));
@@ -2833,26 +3561,37 @@ public class StudentTracker extends Application {
             printWriter.flush();
             printWriter.close();
             Desktop desktop = Desktop.getDesktop();
-            desktop.print(new File(printFile));
-            Alert printAlert = new Alert(Alert.AlertType.INFORMATION,
-                    "Printing List");
-            DialogPane dialogPane = printAlert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass()
-                    .getResource("Main.css").toExternalForm());
-            dialogPane.getStyleClass().add("myDialog");
-            Button okButton = (Button) printAlert.getDialogPane()
-                    .lookupButton(ButtonType.OK);
-            Image okImage = new Image("/studenttracker/Icons/OKButton.png", 55, 33,
-                    true, true);
-            okButton.setGraphic(new ImageView(okImage));
-            okButton.setText(null);
-            printAlert.showAndWait();
+            try {
+                desktop.print(new File(printFile));
+                Alert printAlert = new Alert(Alert.AlertType.INFORMATION,
+                        "Printing List");
+                DialogPane dialogPane = printAlert.getDialogPane();
+                dialogPane.getStylesheets().add(getClass()
+                        .getResource("Main.css").toExternalForm());
+                dialogPane.getStyleClass().add("myDialog");
+                Button okButton = (Button) printAlert.getDialogPane()
+                        .lookupButton(ButtonType.OK);
+                Image okImage = new Image("/studenttracker/Icons/OKButton.png", 55, 33,
+                        true, true);
+                okButton.setGraphic(new ImageView(okImage));
+                okButton.setText(null);
+                printAlert.showAndWait();
+            } catch (IOException io) {
+                errorAlert("Print Error", getTrace(io));
+            }
 
         } catch (IOException io) {
-
+            errorAlert("Write Error", getTrace(io));
         }
     }
 
+    /**
+     * Appends lines from br to readMeLines.
+     *
+     * @param readMeLines modified by br
+     * @param br modifies readMeLines
+     * @throws IOException if lines cannot be read.
+     */
     private void getReadMeText(StringBuilder readMeLines, BufferedReader br)
             throws IOException {
         //Retrieves content from readme file.
@@ -2865,5 +3604,4 @@ public class StudentTracker extends Application {
             line = br.readLine();
         }
     }
-
 }
